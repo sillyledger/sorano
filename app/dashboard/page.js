@@ -8,7 +8,7 @@ export default function Dashboard() {
   const [newBoard, setNewBoard] = useState('')
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
-  const [showCreate, setShowCreate] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const router = useRouter()
 
   useEffect(() => { checkUser() }, [])
@@ -31,12 +31,34 @@ export default function Dashboard() {
     const slug = newBoard.toLowerCase().replace(/\s+/g, '-')
     await supabase.from('boards').insert({ name: newBoard, slug, owner_id: user.id })
     setNewBoard('')
-    setShowCreate(false)
+    setShowModal(false)
     fetchBoards(user.id)
   }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+
+      {showModal && (
+        <div onClick={() => setShowModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
+            <div style={{ fontSize: '14px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>New board</div>
+            <div style={{ fontSize: '12px', color: '#444', marginBottom: '20px' }}>Give your roadmap a name. You can change this later.</div>
+            <input
+              autoFocus
+              value={newBoard}
+              onChange={e => setNewBoard(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') createBoard(); if (e.key === 'Escape') setShowModal(false) }}
+              placeholder="e.g. TWO app, Aegos intel..."
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '13px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' }}
+            />
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={createBoard} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>Create board</button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div style={{ width: '190px', flexShrink: 0, borderRight: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 0' }}>
         <div style={{ padding: '0 16px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -67,32 +89,15 @@ export default function Dashboard() {
             <h1 style={{ fontSize: '18px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
             <p style={{ fontSize: '12px', color: '#444' }}>Your public roadmaps</p>
           </div>
-          {!showCreate && (
-            <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', background: '#fff', border: 'none' }}>
-              + New board
-            </button>
-          )}
+          <button onClick={() => setShowModal(true)} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>
+            + New board
+          </button>
         </div>
-
-        {showCreate && (
-          <div style={{ display: 'flex', gap: '8px', marginBottom: '32px' }}>
-            <input
-              autoFocus
-              value={newBoard}
-              onChange={e => setNewBoard(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') createBoard(); if (e.key === 'Escape') setShowCreate(false) }}
-              placeholder="Board name..."
-              style={{ flex: 1, padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#22222c', fontSize: '13px', color: '#ccc', outline: 'none' }}
-            />
-            <button onClick={createBoard} style={{ padding: '9px 18px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '13px', color: '#7F77DD', cursor: 'pointer' }}>Create</button>
-            <button onClick={() => setShowCreate(false)} style={{ padding: '9px 18px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
-          </div>
-        )}
 
         {loading ? (
           <p style={{ color: '#444', fontSize: '13px' }}>Loading...</p>
         ) : boards.length === 0 ? (
-          <p style={{ color: '#444', fontSize: '13px' }}>No boards yet. Create your first one above.</p>
+          <p style={{ color: '#444', fontSize: '13px' }}>No boards yet. Create your first one.</p>
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '10px' }}>
             {boards.map(board => (
