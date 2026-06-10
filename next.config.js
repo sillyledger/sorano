@@ -4,6 +4,11 @@ const nextConfig = {
   async rewrites() {
     return [
       {
+        source: '/',
+        has: [{ type: 'host', value: 'app.sorano.space' }],
+        destination: '/dashboard',
+      },
+      {
         source: '/:path*',
         has: [{ type: 'host', value: 'app.sorano.space' }],
         destination: '/dashboard/:path*',
