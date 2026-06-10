@@ -9,6 +9,11 @@ const nextConfig = {
         destination: '/dashboard',
       },
       {
+        source: '/board/:path*',
+        has: [{ type: 'host', value: 'app.sorano.space' }],
+        destination: '/board/:path*',
+      },
+      {
         source: '/:path*',
         has: [{ type: 'host', value: 'app.sorano.space' }],
         destination: '/dashboard/:path*',
