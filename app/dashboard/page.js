@@ -9,6 +9,7 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [stats, setStats] = useState({ planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 })
   const router = useRouter()
 
   useEffect(() => { checkUser() }, [])
@@ -21,8 +22,17 @@ export default function Dashboard() {
   }
 
   async function fetchBoards(userId) {
-    const { data } = await supabase.from('boards').select('*').eq('owner_id', userId)
-    setBoards(data || [])
+    const { data: boardData } = await supabase.from('boards').select('*').eq('owner_id', userId)
+    setBoards(boardData || [])
+    if (boardData && boardData.length > 0) {
+      const boardIds = boardData.map(b => b.id)
+      const { data: cardData } = await supabase.from('cards').select('status').in('board_id', boardIds)
+      if (cardData) {
+        const counts = { planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 }
+        cardData.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++ })
+        setStats(counts)
+      }
+    }
     setLoading(false)
   }
 
@@ -39,6 +49,13 @@ export default function Dashboard() {
     await supabase.auth.signOut()
     router.push('/login')
   }
+
+  const statItems = [
+    { label: 'Planned', key: 'planned', color: '#333' },
+    { label: 'In progress', key: 'in-progress', color: '#185FA5' },
+    { label: 'In review', key: 'in-review', color: '#854F0B' },
+    { label: 'Shipped', key: 'shipped', color: '#0F6E56' },
+  ]
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
@@ -90,7 +107,7 @@ export default function Dashboard() {
       </div>
 
       <div style={{ flex: 1, padding: '40px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
           <div>
             <h1 style={{ fontSize: '18px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
             <p style={{ fontSize: '12px', color: '#444' }}>Your public roadmaps</p>
@@ -98,6 +115,18 @@ export default function Dashboard() {
           <button onClick={() => setShowModal(true)} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>
             + New board
           </button>
+        </div>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '32px' }}>
+          {statItems.map(s => (
+            <div key={s.key} style={{ background: '#22222c', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.color, display: 'inline-block' }}></span>
+                <span style={{ fontSize: '11px', color: '#444' }}>{s.label}</span>
+              </div>
+              <div style={{ fontSize: '28px', fontWeight: '500', color: '#bbb', lineHeight: 1 }}>{stats[s.key]}</div>
+            </div>
+          ))}
         </div>
 
         {loading ? (
