@@ -68,7 +68,7 @@ export default function Dashboard() {
             <p style={{ fontSize: '12px', color: '#444' }}>Your public roadmaps</p>
           </div>
           {!showCreate && (
-            <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '13px', color: '#7F77DD', cursor: 'pointer' }}>
+            <button onClick={() => setShowCreate(true)} style={{ display: 'flex', alignItems: 'center', gap: '6px', padding: '8px 16px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '13px', color: '#fff', cursor: 'pointer', background: '#7F77DD', border: 'none' }}>
               + New board
             </button>
           )}
