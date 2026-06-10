@@ -89,7 +89,7 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ flex: 1, padding: '40px' }}>
+      <div style={{ flex: 1, padding: '40px', maxWidth: '800px' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '32px' }}>
           <div>
             <h1 style={{ fontSize: '18px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
