@@ -41,6 +41,13 @@ export default function PublicBoard({ params }) {
     <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Board not found.</div>
   )
 
+  if (!board.is_public) return (
+    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', flexDirection: 'column', gap: '8px' }}>
+      <div style={{ fontSize: '13px', color: '#555' }}>This board is private.</div>
+      <div style={{ fontSize: '11px', color: '#333' }}>The owner hasn't made it public yet.</div>
+    </div>
+  )
+
   return (
     <div style={{ minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
       <div style={{ padding: '24px 32px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
