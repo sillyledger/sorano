@@ -1,2 +1,2 @@
-# sorano
-Public roadmap tool
+# Sorano
+Public roadmap tool for indie founders.
