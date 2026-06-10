@@ -35,6 +35,11 @@ export default function Dashboard() {
     fetchBoards(user.id)
   }
 
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+    router.push('/login')
+  }
+
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
 
@@ -78,8 +83,9 @@ export default function Dashboard() {
             {b.name}
           </div>
         ))}
-        <div style={{ marginTop: 'auto', padding: '16px', borderTop: '0.5px solid rgba(255,255,255,0.05)', fontSize: '11px', color: '#444' }}>
-          {user?.email}
+        <div style={{ marginTop: 'auto', padding: '16px', borderTop: '0.5px solid rgba(255,255,255,0.05)' }}>
+          <div style={{ fontSize: '11px', color: '#444', marginBottom: '10px' }}>{user?.email}</div>
+          <div onClick={handleSignOut} style={{ fontSize: '12px', color: '#3a3a44', cursor: 'pointer' }}>Sign out</div>
         </div>
       </div>
 
