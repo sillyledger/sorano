@@ -24,10 +24,15 @@ export default function Login() {
     }
 
     if (mode === 'signup') {
-      const { error } = await supabase.auth.signUp({ email, password })
+      const { data, error } = await supabase.auth.signUp({ email, password })
       if (error) { setError(error.message); setLoading(false); return }
-      setMessage('Check your email to confirm your account.')
-      setLoading(false)
+      if (data.session) {
+        router.push('/dashboard')
+      } else {
+        setMessage('Account created. You can now sign in.')
+        setMode('login')
+        setLoading(false)
+      }
     }
 
     if (mode === 'reset') {
