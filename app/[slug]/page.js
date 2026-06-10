@@ -1,0 +1,95 @@
+'use client'
+import { useEffect, useState } from 'react'
+import { supabase } from '../../lib/supabase'
+
+const COLUMNS = [
+  { key: 'planned', label: 'Planned', color: '#333' },
+  { key: 'in-progress', label: 'In progress', color: '#185FA5' },
+  { key: 'in-review', label: 'In review', color: '#854F0B' },
+  { key: 'shipped', label: 'Shipped', color: '#0F6E56' },
+]
+
+const TAG_STYLES = {
+  UI: { bg: '#22203a', color: '#7F77DD' },
+  Core: { bg: '#26262e', color: '#666' },
+  Feature: { bg: '#122218', color: '#1D9E75' },
+  Auth: { bg: '#122218', color: '#1D9E75' },
+  UX: { bg: '#241e10', color: '#BA7517' },
+}
+
+export default function PublicBoard({ params }) {
+  const [board, setBoard] = useState(null)
+  const [cards, setCards] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => { fetchBoard() }, [])
+
+  async function fetchBoard() {
+    const { data: b } = await supabase.from('boards').select('*').eq('slug', params.slug).single()
+    if (!b) { setLoading(false); return }
+    setBoard(b)
+    const { data: c } = await supabase.from('cards').select('*').eq('board_id', b.id).order('created_at', { ascending: true })
+    setCards(c || [])
+    setLoading(false)
+  }
+
+  if (loading) return (
+    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
+  )
+
+  if (!board) return (
+    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Board not found.</div>
+  )
+
+  return (
+    <div style={{ minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+      <div style={{ padding: '24px 32px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+              <rect x="1" y="1" width="6" height="9" rx="1.5" fill="#7F77DD" opacity="0.9"/>
+              <rect x="9" y="1" width="6" height="5" rx="1.5" fill="#7F77DD" opacity="0.5"/>
+              <rect x="9" y="8" width="6" height="7" rx="1.5" fill="#7F77DD" opacity="0.7"/>
+            </svg>
+          </div>
+          <div>
+            <div style={{ fontSize: '13px', fontWeight: '500', color: '#ccc' }}>{board.name}</div>
+            <div style={{ fontSize: '11px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
+          </div>
+        </div>
+        <div style={{ fontSize: '11px', color: '#3a3a44', display: 'flex', alignItems: 'center', gap: '6px' }}>
+          <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0F6E56', display: 'inline-block' }}></span>
+          actively building
+        </div>
+      </div>
+
+      <div style={{ display: 'flex', padding: '0' }}>
+        {COLUMNS.map(col => (
+          <div key={col.key} style={{ flex: 1, borderRight: '0.5px solid rgba(255,255,255,0.05)', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: col.color, display: 'inline-block' }}></span>
+              <span style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>{col.label}</span>
+              <span style={{ fontSize: '11px', color: '#333', background: '#22222c', padding: '1px 5px', borderRadius: '99px' }}>{cards.filter(c => c.status === col.key).length}</span>
+            </div>
+            {cards.filter(c => c.status === col.key).map(card => (
+              <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '10px 12px' }}>
+                <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45', marginBottom: card.tag ? '7px' : '0' }}>{card.title}</div>
+                {card.tag && (
+                  <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
+                )}
+              </div>
+            ))}
+            {cards.filter(c => c.status === col.key).length === 0 && (
+              <div style={{ fontSize: '12px', color: '#2a2a32', padding: '8px 0' }}>Nothing here yet</div>
+            )}
+          </div>
+        ))}
+      </div>
+
+      <div style={{ padding: '24px 32px', borderTop: '0.5px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+        <span style={{ fontSize: '11px', color: '#2e2e38' }}>Public roadmap powered by </span>
+        <a href="https://sorano.space" style={{ fontSize: '11px', color: '#3a3a44', textDecoration: 'none' }}>sorano.space</a>
+      </div>
+    </div>
+  )
+}
