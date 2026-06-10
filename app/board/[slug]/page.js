@@ -58,6 +58,12 @@ export default function BoardPage({ params }) {
     fetchBoard(user.id)
   }
 
+  async function togglePublic() {
+    const updated = !board.is_public
+    await supabase.from('boards').update({ is_public: updated }).eq('id', board.id)
+    setBoard({ ...board, is_public: updated })
+  }
+
   async function moveCard(cardId, newStatus) {
     await supabase.from('cards').update({ status: newStatus }).eq('id', cardId)
     setCards(cards.map(c => c.id === cardId ? { ...c, status: newStatus } : c))
@@ -102,8 +108,16 @@ export default function BoardPage({ params }) {
             {board.name}
             <span style={{ fontSize: '11px', color: '#333', fontWeight: '400' }}>sorano.space/{board.slug}</span>
           </div>
-          <div style={{ display: 'flex', gap: '6px' }}>
-            <button onClick={() => navigator.clipboard?.writeText(`https://sorano.space/${board.slug}`)} style={{ padding: '5px 11px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '11px', color: '#555', cursor: 'pointer' }}>Copy link</button>
+          <div style={{ display: 'flex', gap: '6px', alignItems: 'center' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '5px 11px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)' }}>
+              <span style={{ fontSize: '11px', color: '#555' }}>{board?.is_public ? 'Public' : 'Private'}</span>
+              <div onClick={togglePublic} style={{ width: '28px', height: '16px', borderRadius: '99px', background: board?.is_public ? '#0F6E56' : '#2e2e38', cursor: 'pointer', position: 'relative', transition: 'background .2s' }}>
+                <div style={{ position: 'absolute', top: '2px', left: board?.is_public ? '14px' : '2px', width: '12px', height: '12px', borderRadius: '50%', background: '#ccc', transition: 'left .2s' }}></div>
+              </div>
+            </div>
+            {board?.is_public && (
+              <button onClick={() => navigator.clipboard?.writeText(`https://sorano.space/${board.slug}`)} style={{ padding: '5px 11px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '11px', color: '#555', cursor: 'pointer' }}>Copy link</button>
+            )}
           </div>
         </div>
 
