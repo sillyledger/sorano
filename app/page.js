@@ -2,7 +2,7 @@ export default function Home() {
   return (
     <div style={{ background: '#1c1c24', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', paddingBottom: '60px' }}>
 
-      <div style={{ maxWidth: '860px', margin: '0 auto' }}>
+      <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
         <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '18px 40px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: '9px' }}>
             <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -46,14 +46,14 @@ export default function Home() {
             <div style={{ marginTop: '16px', display: 'flex', gap: '6px' }}>
               {['Planned', 'In progress', 'In review', 'Shipped'].map((col, i) => (
                 <div key={col} style={{ flex: 1 }}>
-                  <div style={{ fontSize: '9px', color: '#333', marginBottom: '4px', display: 'flex', alignItems: 'center', gap: '3px' }}>
+                  <div style={{ fontSize: '11px', color: '#333', marginBottom: '6px', display: 'flex', alignItems: 'center', gap: '4px' }}>
                     <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: ['#333','#185FA5','#854F0B','#0F6E56'][i], display: 'inline-block' }}></span>
                     {col}
                   </div>
-                  {i === 0 && <><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555', marginBottom: '3px' }}>Home redesign</div><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555' }}>Dark mode</div></>}
-                  {i === 1 && <div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555' }}>Split view</div>}
-                  {i === 2 && <div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555' }}>Auth flow</div>}
-                  {i === 3 && <><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555', marginBottom: '3px' }}>Email verify</div><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '5px 7px', fontSize: '9px', color: '#555' }}>Avatar upload</div></>}
+                  {i === 0 && <><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555', marginBottom: '4px' }}>Home redesign</div><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555' }}>Dark mode</div></>}
+                  {i === 1 && <div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555' }}>Split view</div>}
+                  {i === 2 && <div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555' }}>Auth flow</div>}
+                  {i === 3 && <><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555', marginBottom: '4px' }}>Email verify</div><div style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '5px', padding: '6px 8px', fontSize: '11px', color: '#555' }}>Avatar upload</div></>}
                 </div>
               ))}
             </div>
@@ -63,7 +63,7 @@ export default function Home() {
             <div style={{ fontSize: '10px', color: '#3a3a44', letterSpacing: '.06em', marginBottom: '12px' }}>PUBLIC URL</div>
             <div style={{ fontSize: '15px', fontWeight: '500', color: '#bbb', marginBottom: '6px' }}>One link to share everything.</div>
             <div style={{ fontSize: '12px', color: '#3a3a44', marginBottom: '16px' }}>No login needed to view.</div>
-            <div style={{ background: '#1c1c24', borderRadius: '8px', padding: '10px 12px', fontSize: '11px', color: '#3a3a44', border: '0.5px solid rgba(255,255,255,0.06)' }}>
+            <div style={{ background: '#1c1c24', borderRadius: '8px', padding: '10px 12px', fontSize: '12px', color: '#3a3a44', border: '0.5px solid rgba(255,255,255,0.06)' }}>
               sorano.space/<span style={{ color: '#7F77DD' }}>your-product</span>
             </div>
           </div>
@@ -73,7 +73,7 @@ export default function Home() {
             <div style={{ fontSize: '15px', fontWeight: '500', color: '#bbb', marginBottom: '6px' }}>Public or private, your call.</div>
             <div style={{ fontSize: '12px', color: '#3a3a44', marginBottom: '16px' }}>Toggle visibility anytime.</div>
             <div style={{ background: '#1c1c24', borderRadius: '8px', padding: '10px 12px', border: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <span style={{ fontSize: '11px', color: '#555' }}>Board visibility · Public</span>
+              <span style={{ fontSize: '12px', color: '#555' }}>Board visibility · Public</span>
               <div style={{ width: '28px', height: '16px', borderRadius: '99px', background: '#0F6E56', position: 'relative' }}>
                 <div style={{ position: 'absolute', top: '2px', left: '14px', width: '12px', height: '12px', borderRadius: '50%', background: '#ccc' }}></div>
               </div>
@@ -87,7 +87,7 @@ export default function Home() {
               {[['6','Planned'],['3','In progress'],['2','In review'],['14','Shipped']].map(([val,lbl]) => (
                 <div key={lbl} style={{ background: '#1c1c24', borderRadius: '8px', padding: '10px 12px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb' }}>{val}</div>
-                  <div style={{ fontSize: '10px', color: '#333', marginTop: '2px' }}>{lbl}</div>
+                  <div style={{ fontSize: '11px', color: '#333', marginTop: '2px' }}>{lbl}</div>
                 </div>
               ))}
             </div>
@@ -105,7 +105,7 @@ export default function Home() {
               <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '9px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)', color: '#666', textDecoration: 'none' }}>Get started</a>
               <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {['1 public board','Unlimited cards','Public URL'].map(f => (
-                  <div key={f} style={{ fontSize: '11px', color: '#444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div key={f} style={{ fontSize: '12px', color: '#444', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
@@ -118,7 +118,7 @@ export default function Home() {
               <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '9px', borderRadius: '8px', fontSize: '13px', fontWeight: '500', background: '#fff', border: 'none', color: '#1c1c24', textDecoration: 'none' }}>Upgrade to Pro</a>
               <div style={{ marginTop: '16px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
                 {['Unlimited boards','Custom domain','Feature voting','Remove branding'].map(f => (
-                  <div key={f} style={{ fontSize: '11px', color: '#444', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                  <div key={f} style={{ fontSize: '12px', color: '#444', display: 'flex', alignItems: 'center', gap: '6px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
