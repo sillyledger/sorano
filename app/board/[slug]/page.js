@@ -111,7 +111,7 @@ export default function BoardPage({ params }) {
           {COLUMNS.map(col => (
             <div key={col.key} style={{ flex: 1, borderRight: '0.5px solid rgba(255,255,255,0.05)', padding: '16px 14px', display: 'flex', flexDirection: 'column', gap: '7px' }}>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '6px' }}>
-                <div style={{ fontSize: '11px', color: '#888', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <div style={{ fontSize: '13px', color: '#888', display: 'flex', alignItems: 'center', gap: '6px' }}>
                   <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: col.color, display: 'inline-block' }}></span>
                   {col.label}
                   <span style={{ fontSize: '10px', color: '#333', background: '#22222c', padding: '1px 5px', borderRadius: '99px' }}>{cards.filter(c => c.status === col.key).length}</span>
@@ -121,7 +121,7 @@ export default function BoardPage({ params }) {
 
               {cards.filter(c => c.status === col.key).map(card => (
                 <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '10px 11px', cursor: 'pointer' }}>
-                  <div style={{ fontSize: '12px', fontWeight: '500', color: '#aaa', lineHeight: '1.45', marginBottom: '7px' }}>{card.title}</div>
+                  <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45', marginBottom: '7px' }}>{card.title}</div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                     {card.tag && (
                       <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
@@ -146,7 +146,7 @@ export default function BoardPage({ params }) {
                   </div>
                 </div>
               ) : (
-                <div onClick={() => setNewCard({ col: col.key, title: '', tag: '' })} style={{ padding: '7px 11px', borderRadius: '8px', border: '0.5px dashed rgba(255,255,255,0.05)', fontSize: '11px', color: '#2e2e38', cursor: 'pointer' }}>+ Add card</div>
+                <div onClick={() => setNewCard({ col: col.key, title: '', tag: '' })} style={{ padding: '7px 11px', borderRadius: '8px', border: '0.5px dashed rgba(255,255,255,0.05)', fontSize: '13px', color: '#2e2e38', cursor: 'pointer' }}>+ Add card</div>
               )}
             </div>
           ))}
