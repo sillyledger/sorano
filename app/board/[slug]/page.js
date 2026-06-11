@@ -27,6 +27,8 @@ export default function BoardPage({ params }) {
   const [newCard, setNewCard] = useState({ col: null, title: '', tag: '' })
   const [showMenu, setShowMenu] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showRename, setShowRename] = useState(false)
+  const [renameValue, setRenameValue] = useState('')
   const router = useRouter()
 
   useEffect(() => { checkUser() }, [])
@@ -76,6 +78,14 @@ export default function BoardPage({ params }) {
     setCards(cards.map(c => c.id === cardId ? { ...c, status: newStatus } : c))
   }
 
+  async function renameBoard() {
+    if (!renameValue.trim()) return
+    await supabase.from('boards').update({ name: renameValue }).eq('id', board.id)
+    setBoard({ ...board, name: renameValue })
+    setShowRename(false)
+    setRenameValue('')
+  }
+
   async function deleteBoard() {
     await supabase.from('boards').delete().eq('id', board.id)
     router.push('/dashboard')
@@ -85,6 +95,26 @@ export default function BoardPage({ params }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+
+      {showRename && (
+        <div onClick={() => setShowRename(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
+            <div style={{ fontSize: '15px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>Rename board</div>
+            <input
+              autoFocus
+              value={renameValue}
+              onChange={e => setRenameValue(e.target.value)}
+              onKeyDown={e => { if (e.key === 'Enter') renameBoard(); if (e.key === 'Escape') setShowRename(false) }}
+              placeholder={board.name}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '14px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' }}
+            />
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowRename(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={renameBoard} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>Save</button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {showDeleteConfirm && (
         <div onClick={() => setShowDeleteConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
@@ -149,6 +179,9 @@ export default function BoardPage({ params }) {
               {showMenu && (
                 <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}>
                   <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', right: 0, top: '32px', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', minWidth: '160px', zIndex: 41 }}>
+                    <div onClick={() => { setShowMenu(false); setRenameValue(board.name); setShowRename(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#888', cursor: 'pointer', borderRadius: '6px' }}>
+                      Rename board
+                    </div>
                     <div onClick={() => { setShowMenu(false); setShowDeleteConfirm(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#E24B4A', cursor: 'pointer', borderRadius: '6px' }}>
                       Delete board
                     </div>
