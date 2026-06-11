@@ -9,7 +9,7 @@ export default function Home() {
 
       <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
         <nav style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '24px 40px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none' }}>
             <div style={{ width: '44px', height: '44px', borderRadius: '11px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="24" height="24" viewBox="0 0 16 16" fill="none">
                 <rect x="1" y="1" width="6" height="9" rx="1.5" fill="#7F77DD" opacity="0.9"/>
@@ -18,7 +18,7 @@ export default function Home() {
               </svg>
             </div>
             <span style={{ fontSize: '17px', fontWeight: '500', color: '#ddd' }}>sorano</span>
-          </div>
+          </a>
           <div style={{ display: 'flex', gap: '28px' }}>
             <a href="#features" style={{ fontSize: '14px', color: '#aaa', textDecoration: 'none' }}>Features</a>
             <a href="#pricing" style={{ fontSize: '14px', color: '#aaa', textDecoration: 'none' }}>Pricing</a>
