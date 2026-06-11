@@ -35,7 +35,7 @@ export default function Home() {
           <h1 style={{ fontSize: '52px', fontWeight: '500', color: '#ddd', lineHeight: '1.15', marginBottom: '20px', letterSpacing: '-0.03em' }}>
             Your roadmap, changelog,<br /><span style={{ color: '#7F77DD' }}>and community votes.</span>
           </h1>
-          <p style={{ fontSize: '17px', color: '#444', maxWidth: '500px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+          <p style={{ fontSize: '17px', color: '#666', maxWidth: '500px', margin: '0 auto 40px', lineHeight: '1.6' }}>
             Share what you're building. Let users vote on what's next. Publish a changelog when you ship. One clean link, no login required.
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
