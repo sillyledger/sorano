@@ -28,6 +28,9 @@ export default function BoardPage({ params }) {
   const [showRename, setShowRename] = useState(false)
   const [showTagManager, setShowTagManager] = useState(false)
   const [labelPickerCardId, setLabelPickerCardId] = useState(null)
+  const [pickerNewName, setPickerNewName] = useState('')
+  const [pickerNewColor, setPickerNewColor] = useState('#7F77DD')
+  const [pickerShowCreate, setPickerShowCreate] = useState(false)
   const [renameValue, setRenameValue] = useState('')
   const [newTagName, setNewTagName] = useState('')
   const [newTagColor, setNewTagColor] = useState('#7F77DD')
@@ -80,6 +83,18 @@ export default function BoardPage({ params }) {
     setNewTagColor('#7F77DD')
   }
 
+  async function addTagFromPicker(cardId) {
+    if (!pickerNewName.trim()) return
+    const { data } = await supabase.from('tags').insert({ board_id: board.id, name: pickerNewName.trim(), color: pickerNewColor }).select().single()
+    if (data) {
+      setTags(prev => [...prev, data])
+      await updateCardLabel(cardId, data.id)
+    }
+    setPickerNewName('')
+    setPickerNewColor('#7F77DD')
+    setPickerShowCreate(false)
+  }
+
   async function deleteTag(tagId) {
     await supabase.from('tags').delete().eq('id', tagId)
     setTags(prev => prev.filter(t => t.id !== tagId))
@@ -90,6 +105,9 @@ export default function BoardPage({ params }) {
     await supabase.from('cards').update({ tag: tagId || null }).eq('id', cardId)
     setCards(prev => prev.map(c => c.id === cardId ? { ...c, tag: tagId || null } : c))
     setLabelPickerCardId(null)
+    setPickerShowCreate(false)
+    setPickerNewName('')
+    setPickerNewColor('#7F77DD')
   }
 
   async function addCard(col) {
@@ -141,13 +159,20 @@ export default function BoardPage({ params }) {
     return tags.find(t => t.id === tagId) || null
   }
 
+  function openPicker(cardId) {
+    setLabelPickerCardId(cardId)
+    setPickerShowCreate(false)
+    setPickerNewName('')
+    setPickerNewColor('#7F77DD')
+  }
+
   if (loading) return <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
 
   const topVotedId = getTopVotedId()
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}
-      onClick={() => setLabelPickerCardId(null)}
+      onClick={() => { setLabelPickerCardId(null); setPickerShowCreate(false) }}
     >
 
       {/* Rename modal */}
@@ -302,8 +327,8 @@ export default function BoardPage({ params }) {
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', position: 'relative' }}>
 
-                        {/* Clickable label / add label */}
-                        <div onClick={e => { e.stopPropagation(); setLabelPickerCardId(pickerOpen ? null : card.id) }} style={{ cursor: 'pointer' }}>
+                        {/* Clickable label */}
+                        <div onClick={e => { e.stopPropagation(); openPicker(pickerOpen ? null : card.id) }} style={{ cursor: 'pointer' }}>
                           {tag ? (
                             <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: tag.color + '22', color: tag.color }}>{tag.name}</span>
                           ) : (
@@ -313,11 +338,14 @@ export default function BoardPage({ params }) {
 
                         {/* Label picker dropdown */}
                         {pickerOpen && (
-                          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '22px', left: 0, background: '#2a2a34', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', zIndex: 30, minWidth: '140px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '22px', left: 0, background: '#2a2a34', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', zIndex: 30, minWidth: '160px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+
+                            {/* Remove label */}
                             <div onClick={() => updateCardLabel(card.id, null)} style={{ padding: '6px 10px', fontSize: '12px', color: '#555', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <span style={{ fontSize: '10px' }}>✕</span> No label
                             </div>
-                            {tags.length === 0 && <div style={{ padding: '6px 10px', fontSize: '11px', color: '#3a3a44' }}>No labels yet</div>}
+
+                            {/* Existing labels */}
                             {tags.map(t => (
                               <div key={t.id} onClick={() => updateCardLabel(card.id, t.id)} style={{ padding: '6px 10px', fontSize: '12px', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.color, flexShrink: 0, display: 'inline-block' }}></span>
@@ -325,6 +353,35 @@ export default function BoardPage({ params }) {
                                 {card.tag === t.id && <span style={{ marginLeft: 'auto', color: '#7F77DD', fontSize: '10px' }}>✓</span>}
                               </div>
                             ))}
+
+                            {/* Divider + create new */}
+                            <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', marginTop: '4px', paddingTop: '4px' }}>
+                              {!pickerShowCreate ? (
+                                <div onClick={() => setPickerShowCreate(true)} style={{ padding: '6px 10px', fontSize: '12px', color: '#555', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                  <span>+</span> New label
+                                </div>
+                              ) : (
+                                <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                                  <input
+                                    autoFocus
+                                    value={pickerNewName}
+                                    onChange={e => setPickerNewName(e.target.value)}
+                                    onKeyDown={e => { if (e.key === 'Enter') addTagFromPicker(card.id); if (e.key === 'Escape') setPickerShowCreate(false) }}
+                                    placeholder="Label name..."
+                                    style={{ padding: '5px 8px', borderRadius: '5px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '11px', color: '#ccc', outline: 'none', width: '100%', boxSizing: 'border-box' }}
+                                  />
+                                  <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
+                                    {PRESET_COLORS.map(c => (
+                                      <div key={c} onClick={() => setPickerNewColor(c)} style={{ width: '14px', height: '14px', borderRadius: '50%', background: c, cursor: 'pointer', border: pickerNewColor === c ? '2px solid #fff' : '2px solid transparent', flexShrink: 0 }}></div>
+                                    ))}
+                                  </div>
+                                  <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+                                    {pickerNewName && <span style={{ fontSize: '10px', padding: '1px 7px', borderRadius: '99px', background: pickerNewColor + '22', color: pickerNewColor }}>{pickerNewName}</span>}
+                                    <button onClick={() => addTagFromPicker(card.id)} style={{ marginLeft: 'auto', padding: '4px 10px', borderRadius: '5px', border: 'none', background: '#7F77DD', fontSize: '11px', color: '#fff', cursor: 'pointer' }}>Add</button>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         )}
 
