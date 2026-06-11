@@ -305,16 +305,58 @@ export default function Home() {
         </div>
 
         {/* Footer */}
-        <div style={{ padding: '60px 40px 0', borderTop: '0.5px solid rgba(255,255,255,0.05)', marginTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <span style={{ fontSize: '13px', color: '#333' }}>sorano © 2026</span>
-          <div style={{ display: 'flex', gap: '24px' }}>
-            {['Privacy','Terms','Twitter'].map(l => (
-              <span key={l} style={{ fontSize: '13px', color: '#2a2a32' }}>{l}</span>
-            ))}
+        <div style={{ marginTop: '80px', borderTop: '0.5px solid rgba(255,255,255,0.06)', padding: '60px 40px 40px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '40px', maxWidth: '960px', margin: '0 auto' }}>
+
+            {/* Brand */}
+            <div>
+              <a href="/" style={{ display: 'flex', alignItems: 'center', gap: '8px', textDecoration: 'none', marginBottom: '12px' }}>
+                <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+                    <rect x="1" y="1" width="6" height="9" rx="1.5" fill="#7F77DD" opacity="0.9"/>
+                    <rect x="9" y="1" width="6" height="5" rx="1.5" fill="#7F77DD" opacity="0.5"/>
+                    <rect x="9" y="8" width="6" height="7" rx="1.5" fill="#7F77DD" opacity="0.7"/>
+                  </svg>
+                </div>
+                <span style={{ fontSize: '14px', fontWeight: '500', color: '#ccc' }}>sorano</span>
+              </a>
+              <div style={{ fontSize: '13px', color: '#3a3a44', lineHeight: '1.6' }}>Public roadmaps for founders building in public.</div>
+            </div>
+
+            {/* Product */}
+            <div>
+              <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>PRODUCT</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <a href="#features" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Features</a>
+                <a href="#pricing" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Pricing</a>
+                <a href="https://sorano.space/example" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Example board</a>
+                <a href="#faq" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>FAQ</a>
+              </div>
+            </div>
+
+            {/* Account */}
+            <div>
+              <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>ACCOUNT</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <a href="https://app.sorano.space/login" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Sign in</a>
+                <a href="https://app.sorano.space/login" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Sign up</a>
+              </div>
+            </div>
+
+            {/* Legal */}
+            <div>
+              <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>LEGAL</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
+                <a href="/privacy" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Privacy Policy</a>
+                <a href="/terms" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Terms of Service</a>
+                <a href="/terms#refunds" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Refund Policy</a>
+              </div>
+            </div>
+
+          </div>
+
+          <div style={{ maxWidth: '960px', margin: '40px auto 0', paddingTop: '24px', borderTop: '0.5px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: '12px', color: '#2e2e38' }}>© 2026 Sorano. All rights reserved.</span>
+            <a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#2e2e38', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
           </div>
         </div>
-
-      </div>
-    </div>
-  )
-}
