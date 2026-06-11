@@ -34,7 +34,7 @@ export default function Home() {
           </p>
           <div style={{ display: 'flex', gap: '12px', justifyContent: 'center' }}>
             <a href="https://app.sorano.space/login" style={{ padding: '12px 28px', borderRadius: '9px', background: '#fff', fontSize: '14px', color: '#1c1c24', textDecoration: 'none', fontWeight: '500' }}>Start for free</a>
-            <a href="https://sorano.space/test-board" style={{ padding: '12px 28px', borderRadius: '9px', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.1)', fontSize: '14px', color: '#666', textDecoration: 'none' }}>View an example</a>
+            <a href="https://sorano.space/example" style={{ padding: '12px 28px', borderRadius: '9px', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.1)', fontSize: '14px', color: '#666', textDecoration: 'none' }}>View an example</a>
           </div>
         </div>
 
