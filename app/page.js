@@ -356,8 +356,8 @@ export default function Home() {
           </div>
 
           <div style={{ maxWidth: '960px', margin: '40px auto 0', paddingTop: '24px', borderTop: '0.5px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: '12px', color: '#2e2e38' }}>© 2026 Sorano. All rights reserved.</span>
-            <a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#2e2e38', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
+            <span style={{ fontSize: '12px', color: '#555' }}>© 2026 Sorano. All rights reserved.</span>
+<a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#555', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
           </div>
         </div>
 </div>
