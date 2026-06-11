@@ -360,3 +360,7 @@ export default function Home() {
             <a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#2e2e38', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
           </div>
         </div>
+</div>
+    </div>
+  )
+}
