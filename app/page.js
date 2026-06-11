@@ -44,7 +44,7 @@ export default function Home() {
           </div>
               <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
   <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
-  <span style={{ fontSize: '15px', color: '#aaa' }}>90% of founders only ever need the free plan.</span>
+  <span style={{ fontSize: '16px', color: '#aaa' }}>90% of founders only need the FREE plan.</span>
   <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
 </div>
         </div>
