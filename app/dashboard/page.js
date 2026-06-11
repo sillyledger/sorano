@@ -116,7 +116,7 @@ export default function Dashboard() {
         <div style={{ padding: '16px 16px 6px', fontSize: '10px', color: '#3a3a44', letterSpacing: '.06em' }}>TRACK</div>
         {boards.map(b => (
           <div key={b.id} onClick={() => router.push(`/board/${b.slug}`)} style={{ padding: '6px 16px', fontSize: '13px', color: '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#333', flexShrink: 0, display: 'inline-block' }}></span>
+            <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30'][boards.indexOf(b) % 6], flexShrink: 0, display: 'inline-block' }}></span>
             {b.name}
           </div>
         ))}
