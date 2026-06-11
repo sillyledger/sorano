@@ -122,7 +122,7 @@ export default function Dashboard() {
             <div key={s.key} style={{ background: '#22222c', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
                 <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.color, display: 'inline-block' }}></span>
-                <span style={{ fontSize: '11px', color: '#444' }}>{s.label}</span>
+                <span style={{ fontSize: '11px', color: '#888' }}>{s.label}</span>
               </div>
               <div style={{ fontSize: '28px', fontWeight: '500', color: '#bbb', lineHeight: 1 }}>{stats[s.key]}</div>
             </div>
