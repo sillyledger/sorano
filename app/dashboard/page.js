@@ -7,6 +7,7 @@ export default function Dashboard() {
   const [boards, setBoards] = useState([])
   const [newBoard, setNewBoard] = useState('')
   const [loading, setLoading] = useState(true)
+  const [authChecked, setAuthChecked] = useState(false)
   const [user, setUser] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -19,8 +20,12 @@ export default function Dashboard() {
 
   async function checkUser() {
     const { data: { session } } = await supabase.auth.getSession()
-    if (!session) { router.push('/login'); return }
+    if (!session) {
+      router.push('/login')
+      return
+    }
     setUser(session.user)
+    setAuthChecked(true)
     fetchBoards(session.user.id)
   }
 
@@ -86,6 +91,15 @@ export default function Dashboard() {
   }
 
   const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30']
+
+  // Block render until auth is confirmed — prevents flash of dashboard for logged-out users
+  if (!authChecked) {
+    return (
+      <div style={{ minHeight: '100vh', background: '#1c1c24', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <div style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7F77DD', opacity: 0.5 }} />
+      </div>
+    )
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
