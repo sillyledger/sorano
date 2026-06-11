@@ -3,6 +3,27 @@ import { useState } from 'react'
 
 export default function Home() {
   const [billing, setBilling] = useState('monthly')
+  const [activeCategory, setActiveCategory] = useState('Pricing')
+  const [openIndex, setOpenIndex] = useState(null)
+
+  const faqData = {
+    'Pricing': [
+      { q: 'Is the free plan actually free forever?', a: 'Yes. No credit card required, no trial period. The free plan gives you 3 public boards with unlimited cards, a public roadmap, and a changelog. It stays free as long as Sorano exists.' },
+      { q: "What's the difference between Lifetime and Pro?", a: 'Both unlock the same features — unlimited boards, upvoting, custom labels, and branding removal. Lifetime is a one-time $60 payment covering all future features. Pro is $4/month or $30/year.' },
+      { q: 'Can I try it before paying?', a: "Yes — the free plan is permanent, not a trial. Build up to 3 boards and share them publicly. Upgrade anytime when you're ready for more." },
+    ],
+    'Features': [
+      { q: "What does 'voting disabled' on the free plan mean?", a: "On the free plan, users can see vote counts on your roadmap but can't cast new votes. Upgrading to Lifetime or Pro enables voting on all your boards." },
+      { q: 'Do my users need an account to vote?', a: 'No. Voting is fully anonymous — just click the upvote button. No login, no email, no friction. We use a browser token to prevent duplicate votes.' },
+      { q: 'What is the changelog?', a: "A public feed at sorano.space/your-slug/changelog showing everything you've marked as Shipped, ordered by date. You can add optional release notes to each entry." },
+    ],
+    'Boards': [
+      { q: 'What happens to my boards if I cancel Pro?', a: 'Your boards stay live and accessible. If you have more than 3, they become read-only until you upgrade again or bring your count down to 3.' },
+      { q: 'Can I make a board private?', a: "Yes. Each board has a public/private toggle you can flip anytime. Private boards are only visible to you when logged in." },
+    ],
+  }
+
+  const faqCategories = Object.keys(faqData)
 
   return (
     <div style={{ background: '#1c1c24', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', paddingBottom: '80px' }}>
@@ -42,16 +63,15 @@ export default function Home() {
             <a href="https://app.sorano.space/login" style={{ padding: '12px 28px', borderRadius: '9px', background: '#fff', fontSize: '14px', color: '#1c1c24', textDecoration: 'none', fontWeight: '500' }}>Start for free</a>
             <a href="https://sorano.space/example" style={{ padding: '12px 28px', borderRadius: '9px', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.1)', fontSize: '14px', color: '#666', textDecoration: 'none' }}>View an example</a>
           </div>
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-  <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
-  <span style={{ fontSize: '16px', color: '#aaa' }}>90% of founders only need the FREE plan.</span>
-  <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
-</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+            <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
+            <span style={{ fontSize: '16px', color: '#aaa' }}>90% of founders only need the FREE plan.</span>
+            <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
+          </div>
         </div>
 
         {/* Features */}
         <div id="features" style={{ padding: '0 40px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
-
           <div style={{ gridColumn: 'span 2', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '320px' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>ROADMAP BOARD</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '8px' }}>Four columns. Plan, build, ship.</div>
@@ -167,7 +187,6 @@ export default function Home() {
               </div>
             </div>
           </div>
-
         </div>
 
         {/* Pricing */}
@@ -186,7 +205,6 @@ export default function Home() {
           </div>
 
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '16px', maxWidth: '960px', margin: '0 auto' }}>
-
             <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '32px' }}>
               <div style={{ fontSize: '15px', color: '#666', marginBottom: '12px' }}>Free</div>
               <div style={{ fontSize: '36px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>$0 <span style={{ fontSize: '15px', color: '#666', fontWeight: '400' }}>/ forever</span></div>
@@ -234,10 +252,59 @@ export default function Home() {
                 ))}
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* FAQ */}
+        <div id="faq" style={{ padding: '80px 40px 0' }}>
+          <div style={{ fontSize: '28px', fontWeight: '500', color: '#ccc', textAlign: 'center', marginBottom: '10px' }}>Frequently asked questions</div>
+          <div style={{ fontSize: '14px', color: '#555', textAlign: 'center', marginBottom: '48px' }}>Everything you need to know before getting started.</div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '180px 1fr', gap: '12px', maxWidth: '960px', margin: '0 auto' }}>
+
+            {/* Category list */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {faqCategories.map(cat => (
+                <div
+                  key={cat}
+                  onClick={() => { setActiveCategory(cat); setOpenIndex(null) }}
+                  style={{
+                    padding: '12px 16px', borderRadius: '10px', cursor: 'pointer',
+                    border: activeCategory === cat ? '0.5px solid rgba(127,119,221,0.35)' : '0.5px solid rgba(255,255,255,0.06)',
+                    background: activeCategory === cat ? 'rgba(127,119,221,0.08)' : '#22222c',
+                    fontSize: '14px',
+                    color: activeCategory === cat ? '#ccc' : '#555',
+                    display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+                  }}
+                >
+                  <span>{cat}</span>
+                  <span style={{ fontSize: '12px', color: activeCategory === cat ? '#7F77DD' : '#3a3a44' }}>›</span>
+                </div>
+              ))}
+            </div>
+
+            {/* Questions panel */}
+            <div style={{ background: '#22222c', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.06)', overflow: 'hidden' }}>
+              {faqData[activeCategory].map((item, i) => (
+                <div key={i} style={{ borderBottom: i < faqData[activeCategory].length - 1 ? '0.5px solid rgba(255,255,255,0.06)' : 'none' }}>
+                  <div
+                    onClick={() => setOpenIndex(openIndex === i ? null : i)}
+                    style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '18px 20px', cursor: 'pointer', gap: '16px' }}
+                  >
+                    <span style={{ fontSize: '14px', color: openIndex === i ? '#ccc' : '#aaa' }}>{item.q}</span>
+                    <span style={{ fontSize: '18px', color: openIndex === i ? '#7F77DD' : '#3a3a44', flexShrink: 0, transform: openIndex === i ? 'rotate(45deg)' : 'none', display: 'inline-block', lineHeight: 1 }}>+</span>
+                  </div>
+                  {openIndex === i && (
+                    <div style={{ fontSize: '13px', color: '#555', lineHeight: '1.7', padding: '0 20px 18px' }}>{item.a}</div>
+                  )}
+                </div>
+              ))}
+            </div>
 
           </div>
         </div>
 
+        {/* Footer */}
         <div style={{ padding: '60px 40px 0', borderTop: '0.5px solid rgba(255,255,255,0.05)', marginTop: '80px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '13px', color: '#333' }}>sorano © 2026</span>
           <div style={{ display: 'flex', gap: '24px' }}>
