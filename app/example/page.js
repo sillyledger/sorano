@@ -6,20 +6,20 @@ const COLUMNS = [
 ]
 
 const CARDS = [
-  { id: 1, title: 'Home page redesign', status: 'planned', tag: 'UI' },
-  { id: 2, title: 'Internally linked docs', status: 'planned', tag: 'Core' },
-  { id: 3, title: 'Settings page v2', status: 'planned', tag: 'UI' },
-  { id: 4, title: 'Offline mode support', status: 'planned', tag: 'Feature' },
-  { id: 5, title: 'Split doc view', status: 'in-progress', tag: 'Feature' },
-  { id: 6, title: 'Light/dark mode polish', status: 'in-progress', tag: 'UI' },
-  { id: 7, title: 'Keyboard shortcuts', status: 'in-progress', tag: 'UX' },
-  { id: 8, title: 'Avatar upload flow', status: 'in-review', tag: 'UX' },
-  { id: 9, title: 'Syntax highlighting', status: 'in-review', tag: 'Core' },
-  { id: 10, title: 'Email verification flow', status: 'shipped', tag: 'Auth' },
-  { id: 11, title: 'Settings page rebuild', status: 'shipped', tag: 'UI' },
-  { id: 12, title: 'Magic link login', status: 'shipped', tag: 'Auth' },
-  { id: 13, title: 'Document templates', status: 'shipped', tag: 'Feature' },
-  { id: 14, title: 'Export to PDF', status: 'shipped', tag: 'Feature' },
+  { id: 1, title: 'Onboarding flow redesign', status: 'planned', tag: 'UX' },
+  { id: 2, title: 'Mobile app beta', status: 'planned', tag: 'Feature' },
+  { id: 3, title: 'API rate limiting', status: 'planned', tag: 'Core' },
+  { id: 4, title: 'Team permissions system', status: 'planned', tag: 'Feature' },
+  { id: 5, title: 'Stripe integration', status: 'in-progress', tag: 'Feature' },
+  { id: 6, title: 'Dashboard v2', status: 'in-progress', tag: 'UI' },
+  { id: 7, title: 'Email notifications', status: 'in-progress', tag: 'Feature' },
+  { id: 8, title: 'Invite team members flow', status: 'in-review', tag: 'UX' },
+  { id: 9, title: 'Usage analytics page', status: 'in-review', tag: 'Feature' },
+  { id: 10, title: 'Magic link auth', status: 'shipped', tag: 'Auth' },
+  { id: 11, title: 'Workspace settings', status: 'shipped', tag: 'Core' },
+  { id: 12, title: 'Billing page', status: 'shipped', tag: 'Feature' },
+  { id: 13, title: 'CSV export', status: 'shipped', tag: 'Feature' },
+  { id: 14, title: 'Public API docs', status: 'shipped', tag: 'Core' },
 ]
 
 const TAG_STYLES = {
@@ -45,9 +45,9 @@ export default function ExampleBoard() {
           <div>
             <div style={{ fontSize: '14px', fontWeight: '500', color: '#ccc', display: 'flex', alignItems: 'center', gap: '8px' }}>
               <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
-              TWO — docs app
+              Launchpad
             </div>
-            <div style={{ fontSize: '11px', color: '#3a3a44', marginTop: '1px' }}>sorano.space/two-app</div>
+            <div style={{ fontSize: '11px', color: '#3a3a44', marginTop: '1px' }}>sorano.space/launchpad</div>
           </div>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
