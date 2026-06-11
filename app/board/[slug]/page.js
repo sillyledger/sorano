@@ -66,6 +66,11 @@ export default function BoardPage({ params }) {
     setBoard({ ...board, is_public: updated })
   }
 
+  async function deleteCard(cardId) {
+    await supabase.from('cards').delete().eq('id', cardId)
+    setCards(cards.filter(c => c.id !== cardId))
+  }
+
   async function moveCard(cardId, newStatus) {
     await supabase.from('cards').update({ status: newStatus }).eq('id', cardId)
     setCards(cards.map(c => c.id === cardId ? { ...c, status: newStatus } : c))
@@ -167,8 +172,11 @@ export default function BoardPage({ params }) {
               </div>
 
               {cards.filter(c => c.status === col.key).map(card => (
-                <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '10px 11px', cursor: 'pointer' }}>
-                  <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45', marginBottom: '7px' }}>{card.title}</div>
+                <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '10px 11px', position: 'relative' }}>
+                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
+                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45' }}>{card.title}</div>
+                    <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#2e2e38', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
+                  </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
                     {card.tag && (
                       <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
