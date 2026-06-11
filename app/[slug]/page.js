@@ -122,8 +122,14 @@ export default function PublicBoard({ params }) {
         </div>
       </div>
 
+      {/* Tab switcher */}
+      <div style={{ padding: '0 28px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', gap: '24px' }}>
+        <a href={`/${board.slug}`} style={{ padding: '12px 0', fontSize: '13px', color: '#ddd', textDecoration: 'none', borderBottom: '2px solid #7F77DD' }}>Roadmap</a>
+        <a href={`/${board.slug}/changelog`} style={{ padding: '12px 0', fontSize: '13px', color: '#555', textDecoration: 'none', borderBottom: '2px solid transparent' }}>Changelog</a>
+      </div>
+
       {/* Board */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', height: 'calc(100vh - 57px - 44px)' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', height: 'calc(100vh - 57px - 41px - 44px)' }}>
         {COLUMNS.map((col, colIdx) => {
           const colCards = cards.filter(c => c.status === col.key)
           return (
