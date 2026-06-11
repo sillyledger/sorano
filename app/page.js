@@ -1,4 +1,9 @@
+'use client'
+import { useState } from 'react'
+
 export default function Home() {
+  const [billing, setBilling] = useState('monthly')
+
   return (
     <div style={{ background: '#1c1c24', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', paddingBottom: '80px' }}>
 
@@ -95,29 +100,58 @@ export default function Home() {
         </div>
 
         <div id="pricing" style={{ padding: '80px 40px 0' }}>
-          <div style={{ fontSize: '28px', fontWeight: '500', color: '#ccc', textAlign: 'center', marginBottom: '10px' }}>Simple pricing</div>
-          <div style={{ fontSize: '14px', color: '#444', textAlign: 'center', marginBottom: '40px' }}>Start free. Upgrade when you need more.</div>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '12px', maxWidth: '560px', margin: '0 auto' }}>
-            <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '32px' }}>
+          <div style={{ fontSize: '28px', fontWeight: '500', color: '#ccc', textAlign: 'center', marginBottom: '10px' }}>Pricing</div>
+          <div style={{ fontSize: '14px', color: '#444', textAlign: 'center', marginBottom: '28px' }}>Start free. Upgrade when you're ready.</div>
+
+          <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
+            <div style={{ display: 'flex', background: '#22222c', borderRadius: '99px', padding: '4px', border: '0.5px solid rgba(255,255,255,0.08)', gap: '2px' }}>
+              <button onClick={() => setBilling('monthly')} style={{ padding: '7px 20px', borderRadius: '99px', border: 'none', background: billing === 'monthly' ? '#fff' : 'transparent', color: billing === 'monthly' ? '#1c1c24' : '#555', fontSize: '13px', fontWeight: '500', cursor: 'pointer' }}>Monthly</button>
+              <button onClick={() => setBilling('yearly')} style={{ padding: '7px 20px', borderRadius: '99px', border: 'none', background: billing === 'yearly' ? '#fff' : 'transparent', color: billing === 'yearly' ? '#1c1c24' : '#555', fontSize: '13px', fontWeight: '500', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '7px' }}>
+                Yearly
+                <span style={{ fontSize: '11px', padding: '2px 7px', borderRadius: '99px', background: '#0a1a12', color: '#1D9E75', fontWeight: '500' }}>Save 37%</span>
+              </button>
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', maxWidth: '820px', margin: '0 auto' }}>
+            <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '28px' }}>
               <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Free</div>
-              <div style={{ fontSize: '36px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>$0 <span style={{ fontSize: '14px', color: '#444', fontWeight: '400' }}>/ forever</span></div>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$0 <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ forever</span></div>
               <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>Perfect for solo founders.</div>
-              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '11px', borderRadius: '9px', fontSize: '14px', fontWeight: '500', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)', color: '#666', textDecoration: 'none' }}>Get started</a>
-              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {['1 public board','Unlimited cards','Public URL'].map(f => (
+              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)', color: '#666', textDecoration: 'none', marginBottom: '20px' }}>Get started</a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {['3 public boards', 'Unlimited cards', 'Public URL'].map(f => (
                   <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
               </div>
             </div>
-            <div style={{ background: '#22222c', border: '0.5px solid rgba(127,119,221,0.3)', borderRadius: '16px', padding: '32px' }}>
+
+            <div style={{ background: '#22222c', border: '1.5px solid rgba(127,119,221,0.5)', borderRadius: '16px', padding: '28px', position: 'relative' }}>
+              <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#7F77DD', color: '#fff', fontSize: '11px', fontWeight: '500', padding: '3px 12px', borderRadius: '99px', whiteSpace: 'nowrap' }}>Most popular</div>
+              <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Lifetime</div>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$60 <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ once</span></div>
+              <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>Pay once, use forever.</div>
+              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: '#7F77DD', border: 'none', color: '#fff', textDecoration: 'none', marginBottom: '20px' }}>Get lifetime access</a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {['Unlimited boards', 'Custom domain', 'Feature voting', 'Remove branding', 'All future features'].map(f => (
+                  <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                    <span style={{ color: '#1D9E75' }}>✓</span> {f}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '28px' }}>
               <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Pro</div>
-              <div style={{ fontSize: '36px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>$7 <span style={{ fontSize: '14px', color: '#444', fontWeight: '400' }}>/ month</span></div>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>
+                {billing === 'monthly' ? <>${'4'} <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ month</span></> : <>${'30'} <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ year</span></>}
+              </div>
               <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>For founders with multiple products.</div>
-              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '11px', borderRadius: '9px', fontSize: '14px', fontWeight: '500', background: '#fff', border: 'none', color: '#1c1c24', textDecoration: 'none' }}>Upgrade to Pro</a>
-              <div style={{ marginTop: '20px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-                {['Unlimited boards','Custom domain','Feature voting','Remove branding'].map(f => (
+              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: '#fff', border: 'none', color: '#1c1c24', textDecoration: 'none', marginBottom: '20px' }}>Upgrade to Pro</a>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+                {['Unlimited boards', 'Custom domain', 'Feature voting', 'Remove branding'].map(f => (
                   <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
