@@ -47,7 +47,6 @@ export default function Home() {
         {/* Features */}
         <div id="features" style={{ padding: '0 40px', display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px' }}>
 
-          {/* Roadmap board — spans 2 */}
           <div style={{ gridColumn: 'span 2', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '320px' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>ROADMAP BOARD</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '8px' }}>Four columns. Plan, build, ship.</div>
@@ -76,7 +75,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Upvoting */}
           <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '320px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>UPVOTING</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '10px' }}>Let users vote on what's next.</div>
@@ -99,7 +97,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Changelog */}
           <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '260px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>CHANGELOG</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '10px' }}>Ship. Write a note. Publish.</div>
@@ -127,7 +124,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Privacy */}
           <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '260px', display: 'flex', flexDirection: 'column' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>PRIVACY</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '10px' }}>Public or private, your call.</div>
@@ -140,7 +136,6 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Stats — spans 2 */}
           <div style={{ gridColumn: 'span 2', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', minHeight: '260px' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em', marginBottom: '16px' }}>STATS</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb', marginBottom: '28px' }}>Always know where you stand.</div>
@@ -148,22 +143,21 @@ export default function Home() {
               {[['6','Planned'],['3','In progress'],['2','In review'],['14','Shipped']].map(([val,lbl]) => (
                 <div key={lbl} style={{ background: '#1c1c24', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
                   <div style={{ fontSize: '32px', fontWeight: '500', color: '#bbb', lineHeight: 1 }}>{val}</div>
-                  <div style={{ fontSize: '12px', color: '#444', marginTop: '6px' }}>{lbl}</div>
+                  <div style={{ fontSize: '12px', color: '#666', marginTop: '6px' }}>{lbl}</div>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* Public URL */}
           <div style={{ gridColumn: 'span 3', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '36px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div style={{ fontSize: '11px', color: '#3a3a44', letterSpacing: '.08em' }}>PUBLIC URL</div>
             <div style={{ fontSize: '20px', fontWeight: '500', color: '#bbb' }}>One link for everything.</div>
-            <div style={{ fontSize: '13px', color: '#3a3a44' }}>Roadmap and changelog, both public. No login needed to view.</div>
+            <div style={{ fontSize: '13px', color: '#555' }}>Roadmap and changelog, both public. No login needed to view.</div>
             <div style={{ display: 'flex', gap: '10px', marginTop: '8px' }}>
-              <div style={{ background: '#1c1c24', borderRadius: '10px', padding: '14px 16px', fontSize: '13px', color: '#3a3a44', border: '0.5px solid rgba(255,255,255,0.06)', flex: 1 }}>
+              <div style={{ background: '#1c1c24', borderRadius: '10px', padding: '14px 16px', fontSize: '13px', color: '#555', border: '0.5px solid rgba(255,255,255,0.06)', flex: 1 }}>
                 sorano.space/<span style={{ color: '#7F77DD' }}>your-product</span>
               </div>
-              <div style={{ background: '#1c1c24', borderRadius: '10px', padding: '14px 16px', fontSize: '13px', color: '#3a3a44', border: '0.5px solid rgba(255,255,255,0.06)', flex: 1 }}>
+              <div style={{ background: '#1c1c24', borderRadius: '10px', padding: '14px 16px', fontSize: '13px', color: '#555', border: '0.5px solid rgba(255,255,255,0.06)', flex: 1 }}>
                 sorano.space/<span style={{ color: '#7F77DD' }}>your-product</span>/changelog
               </div>
             </div>
@@ -174,7 +168,7 @@ export default function Home() {
         {/* Pricing */}
         <div id="pricing" style={{ padding: '80px 40px 0' }}>
           <div style={{ fontSize: '28px', fontWeight: '500', color: '#ccc', textAlign: 'center', marginBottom: '10px' }}>Pricing</div>
-          <div style={{ fontSize: '14px', color: '#444', textAlign: 'center', marginBottom: '28px' }}>Start free. Upgrade when you're ready.</div>
+          <div style={{ fontSize: '14px', color: '#666', textAlign: 'center', marginBottom: '28px' }}>Start free. Upgrade when you're ready.</div>
 
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '40px' }}>
             <div style={{ display: 'flex', background: '#22222c', borderRadius: '99px', padding: '4px', border: '0.5px solid rgba(255,255,255,0.08)', gap: '2px' }}>
@@ -189,31 +183,31 @@ export default function Home() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '12px', maxWidth: '820px', margin: '0 auto' }}>
 
             <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '28px' }}>
-              <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Free</div>
-              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$0 <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ forever</span></div>
-              <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>Perfect for solo founders.</div>
-              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)', color: '#666', textDecoration: 'none', marginBottom: '20px' }}>Get started</a>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Free</div>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$0 <span style={{ fontSize: '13px', color: '#666', fontWeight: '400' }}>/ forever</span></div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>Perfect for solo founders.</div>
+              <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.08)', color: '#888', textDecoration: 'none', marginBottom: '20px' }}>Get started</a>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {['3 public boards', 'Unlimited cards', 'Public roadmap', 'Public changelog', 'View vote counts'].map(f => (
-                  <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div key={f} style={{ fontSize: '13px', color: '#888', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
-                <div style={{ fontSize: '13px', color: '#333', display: 'flex', alignItems: 'center', gap: '8px' }}>
-                  <span style={{ color: '#333' }}>–</span> Voting disabled
+                <div style={{ fontSize: '13px', color: '#555', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ color: '#555' }}>–</span> Voting disabled
                 </div>
               </div>
             </div>
 
             <div style={{ background: '#22222c', border: '1.5px solid rgba(127,119,221,0.5)', borderRadius: '16px', padding: '28px', position: 'relative' }}>
               <div style={{ position: 'absolute', top: '-12px', left: '50%', transform: 'translateX(-50%)', background: '#7F77DD', color: '#fff', fontSize: '11px', fontWeight: '500', padding: '3px 12px', borderRadius: '99px', whiteSpace: 'nowrap' }}>Most popular</div>
-              <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Lifetime</div>
-              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$60 <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ once</span></div>
-              <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>Pay once, use forever.</div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Lifetime</div>
+              <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>$60 <span style={{ fontSize: '13px', color: '#666', fontWeight: '400' }}>/ once</span></div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>Pay once, use forever.</div>
               <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: '#7F77DD', border: 'none', color: '#fff', textDecoration: 'none', marginBottom: '20px' }}>Get lifetime access</a>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {['Unlimited boards', 'Upvoting enabled', 'Custom labels', 'Remove branding', 'All future features'].map(f => (
-                  <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div key={f} style={{ fontSize: '13px', color: '#888', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
@@ -221,15 +215,15 @@ export default function Home() {
             </div>
 
             <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '16px', padding: '28px' }}>
-              <div style={{ fontSize: '13px', color: '#555', marginBottom: '10px' }}>Pro</div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '10px' }}>Pro</div>
               <div style={{ fontSize: '32px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>
-                {billing === 'monthly' ? <>${'4'} <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ month</span></> : <>${'30'} <span style={{ fontSize: '13px', color: '#444', fontWeight: '400' }}>/ year</span></>}
+                {billing === 'monthly' ? <>${'4'} <span style={{ fontSize: '13px', color: '#666', fontWeight: '400' }}>/ month</span></> : <>${'30'} <span style={{ fontSize: '13px', color: '#666', fontWeight: '400' }}>/ year</span></>}
               </div>
-              <div style={{ fontSize: '13px', color: '#3a3a44', marginBottom: '20px' }}>For founders with multiple products.</div>
+              <div style={{ fontSize: '13px', color: '#666', marginBottom: '20px' }}>For founders with multiple products.</div>
               <a href="https://app.sorano.space/login" style={{ display: 'block', textAlign: 'center', padding: '10px', borderRadius: '9px', fontSize: '13px', fontWeight: '500', background: '#fff', border: 'none', color: '#1c1c24', textDecoration: 'none', marginBottom: '20px' }}>Upgrade to Pro</a>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
                 {['Unlimited boards', 'Upvoting enabled', 'Custom labels', 'Remove branding'].map(f => (
-                  <div key={f} style={{ fontSize: '13px', color: '#444', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <div key={f} style={{ fontSize: '13px', color: '#888', display: 'flex', alignItems: 'center', gap: '8px' }}>
                     <span style={{ color: '#1D9E75' }}>✓</span> {f}
                   </div>
                 ))}
