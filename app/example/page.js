@@ -84,8 +84,8 @@ export default function ExampleBoard() {
       </div>
 
       <div style={{ padding: '24px', borderTop: '0.5px solid rgba(255,255,255,0.05)', textAlign: 'center', marginTop: '20px' }}>
-        <span style={{ fontSize: '12px', color: '#2e2e38' }}>Public roadmap powered by </span>
-        <a href="https://sorano.space" style={{ fontSize: '12px', color: '#3a3a44', textDecoration: 'none' }}>sorano.space</a>
+        <span style={{ fontSize: '12px', color: '#555' }}>Public roadmap powered by </span>
+        <a href="https://sorano.space" style={{ fontSize: '12px', color: '#7F77DD', textDecoration: 'none' }}>sorano.space</a>
       </div>
     </div>
   )
