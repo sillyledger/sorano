@@ -10,6 +10,7 @@ export default function Dashboard() {
   const [user, setUser] = useState(null)
   const [showModal, setShowModal] = useState(false)
   const [stats, setStats] = useState({ planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 })
+  const [recentCards, setRecentCards] = useState([])
   const router = useRouter()
 
   useEffect(() => { checkUser() }, [])
@@ -26,11 +27,18 @@ export default function Dashboard() {
     setBoards(boardData || [])
     if (boardData && boardData.length > 0) {
       const boardIds = boardData.map(b => b.id)
-      const { data: cardData } = await supabase.from('cards').select('status').in('board_id', boardIds)
+      const { data: cardData } = await supabase.from('cards').select('*').in('board_id', boardIds).order('created_at', { ascending: false }).limit(10)
       if (cardData) {
         const counts = { planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 }
         cardData.forEach(c => { if (counts[c.status] !== undefined) counts[c.status]++ })
-        setStats(counts)
+        const allCards = await supabase.from('cards').select('*').in('board_id', boardIds)
+        if (allCards.data) {
+          const allCounts = { planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 }
+          allCards.data.forEach(c => { if (allCounts[c.status] !== undefined) allCounts[c.status]++ })
+          setStats(allCounts)
+        }
+        const enriched = cardData.map(c => ({ ...c, boardName: boardData.find(b => b.id === c.board_id)?.name || '' }))
+        setRecentCards(enriched)
       }
     }
     setLoading(false)
@@ -51,11 +59,23 @@ export default function Dashboard() {
   }
 
   const statItems = [
-    { label: 'Planned', key: 'planned', color: '#333' },
+    { label: 'Planned', key: 'planned', color: '#444' },
     { label: 'In progress', key: 'in-progress', color: '#185FA5' },
     { label: 'In review', key: 'in-review', color: '#854F0B' },
     { label: 'Shipped', key: 'shipped', color: '#0F6E56' },
   ]
+
+  const tagStyles = {
+    'planned': { bg: '#1e1e1c', color: '#555', label: 'Planned' },
+    'in-progress': { bg: '#0d1829', color: '#185FA5', label: 'In progress' },
+    'in-review': { bg: '#1a1005', color: '#854F0B', label: 'In review' },
+    'shipped': { bg: '#0a1a12', color: '#0F6E56', label: 'Shipped' },
+  }
+
+  function formatDate(dateStr) {
+    const d = new Date(dateStr)
+    return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+  }
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
@@ -117,7 +137,7 @@ export default function Dashboard() {
           </button>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '32px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
           {statItems.map(s => (
             <div key={s.key} style={{ background: '#22222c', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
@@ -134,16 +154,37 @@ export default function Dashboard() {
         ) : boards.length === 0 ? (
           <p style={{ color: '#444', fontSize: '13px' }}>No boards yet. Create your first one.</p>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '10px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '32px' }}>
             {boards.map(board => (
-              <div key={board.id} onClick={() => router.push(`/board/${board.slug}`)} style={{ padding: '16px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+              <div key={board.id} onClick={() => router.push(`/board/${board.slug}`)} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
                   <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
                   <span style={{ fontSize: '13px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
                 </div>
                 <div style={{ fontSize: '11px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
               </div>
             ))}
+          </div>
+        )}
+
+        {recentCards.length > 0 && (
+          <div>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+              <span style={{ fontSize: '12px', fontWeight: '500', color: '#888' }}>Recent activity</span>
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {recentCards.map(card => {
+                const t = tagStyles[card.status] || tagStyles['planned']
+                return (
+                  <div key={card.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '8px', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)' }}>
+                    <span style={{ fontSize: '10px', padding: '3px 8px', borderRadius: '99px', fontWeight: '500', background: t.bg, color: t.color, flexShrink: 0 }}>{t.label}</span>
+                    <span style={{ fontSize: '12px', color: '#aaa', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.title}</span>
+                    <span style={{ fontSize: '11px', color: '#3a3a44', flexShrink: 0 }}>{card.boardName}</span>
+                    <span style={{ fontSize: '11px', color: '#2e2e38', flexShrink: 0, minWidth: '40px', textAlign: 'right' }}>{formatDate(card.created_at)}</span>
+                  </div>
+                )
+              })}
+            </div>
           </div>
         )}
       </div>
