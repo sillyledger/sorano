@@ -1,91 +1,154 @@
-const COLUMNS = [
-  { key: 'planned', label: 'Planned', color: '#444' },
-  { key: 'in-progress', label: 'In progress', color: '#185FA5' },
-  { key: 'in-review', label: 'In review', color: '#854F0B' },
-  { key: 'shipped', label: 'Shipped', color: '#0F6E56' },
+'use client'
+import { useState } from 'react'
+
+const COLUMNS = ['Planned', 'In progress', 'In review', 'Shipped']
+
+const INITIAL_CARDS = [
+  { id: '1', title: 'Mobile app beta', tag: 'Feature', status: 'Planned', votes: 31, voted: true, topVoted: true },
+  { id: '2', title: 'Onboarding flow redesign', tag: 'UX', status: 'Planned', votes: 18, voted: false, topVoted: false },
+  { id: '3', title: 'API rate limiting', tag: 'Core', status: 'Planned', votes: 9, voted: false, topVoted: false },
+  { id: '4', title: 'Team permissions system', tag: 'Feature', status: 'Planned', votes: 4, voted: false, topVoted: false },
+  { id: '5', title: 'Stripe integration', tag: 'Feature', status: 'In progress', votes: 24, voted: false, topVoted: false },
+  { id: '6', title: 'Dashboard v2', tag: 'UI', status: 'In progress', votes: 17, voted: false, topVoted: false },
+  { id: '7', title: 'Email notifications', tag: 'Feature', status: 'In progress', votes: 11, voted: false, topVoted: false },
+  { id: '8', title: 'Invite team members flow', tag: 'UX', status: 'In review', votes: 8, voted: false, topVoted: false },
+  { id: '9', title: 'Usage analytics page', tag: 'Feature', status: 'In review', votes: 5, voted: false, topVoted: false },
+  { id: '10', title: 'Magic link auth', tag: 'Auth', status: 'Shipped', votes: 0, voted: false, topVoted: false },
+  { id: '11', title: 'Workspace settings', tag: 'Core', status: 'Shipped', votes: 0, voted: false, topVoted: false },
+  { id: '12', title: 'CSV export', tag: 'Feature', status: 'Shipped', votes: 0, voted: false, topVoted: false },
 ]
 
-const CARDS = [
-  { id: 1, title: 'Onboarding flow redesign', status: 'planned', tag: 'UX' },
-  { id: 2, title: 'Mobile app beta', status: 'planned', tag: 'Feature' },
-  { id: 3, title: 'API rate limiting', status: 'planned', tag: 'Core' },
-  { id: 4, title: 'Team permissions system', status: 'planned', tag: 'Feature' },
-  { id: 5, title: 'Stripe integration', status: 'in-progress', tag: 'Feature' },
-  { id: 6, title: 'Dashboard v2', status: 'in-progress', tag: 'UI' },
-  { id: 7, title: 'Email notifications', status: 'in-progress', tag: 'Feature' },
-  { id: 8, title: 'Invite team members flow', status: 'in-review', tag: 'UX' },
-  { id: 9, title: 'Usage analytics page', status: 'in-review', tag: 'Feature' },
-  { id: 10, title: 'Magic link auth', status: 'shipped', tag: 'Auth' },
-  { id: 11, title: 'Workspace settings', status: 'shipped', tag: 'Core' },
-  { id: 12, title: 'Billing page', status: 'shipped', tag: 'Feature' },
-  { id: 13, title: 'CSV export', status: 'shipped', tag: 'Feature' },
-  { id: 14, title: 'Public API docs', status: 'shipped', tag: 'Core' },
-]
-
-const TAG_STYLES = {
-  UI: { bg: '#22203a', color: '#7F77DD' },
-  Core: { bg: '#26262e', color: '#666' },
-  Feature: { bg: '#122218', color: '#1D9E75' },
-  Auth: { bg: '#122218', color: '#1D9E75' },
-  UX: { bg: '#241e10', color: '#BA7517' },
+const TAG_COLORS = {
+  Feature: { bg: 'rgba(127,119,221,0.15)', color: '#7F77DD' },
+  UX: { bg: 'rgba(239,159,39,0.15)', color: '#EF9F27' },
+  Core: { bg: 'rgba(100,100,120,0.2)', color: '#888' },
+  Auth: { bg: 'rgba(29,158,117,0.15)', color: '#1D9E75' },
+  UI: { bg: 'rgba(55,138,221,0.15)', color: '#378ADD' },
 }
 
+const COL_COLORS = { 'Planned': '#555', 'In progress': '#378ADD', 'In review': '#EF9F27', 'Shipped': '#1D9E75' }
+
 export default function ExampleBoard() {
+  const [cards, setCards] = useState(INITIAL_CARDS)
+  const [tooltip, setTooltip] = useState(null)
+
+  function toggleVote(id) {
+    setCards(prev => {
+      const updated = prev.map(c => {
+        if (c.id !== id) return c
+        return { ...c, voted: !c.voted, votes: c.voted ? c.votes - 1 : c.votes + 1 }
+      })
+      const plannedCards = updated.filter(c => c.status === 'Planned')
+      const maxVotes = Math.max(...plannedCards.map(c => c.votes))
+      return updated.map(c => ({
+        ...c,
+        topVoted: c.status === 'Planned' && c.votes === maxVotes && maxVotes > 0
+      }))
+    })
+  }
+
   return (
-    <div style={{ minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
-      <div style={{ padding: '20px 28px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '28px', height: '28px', borderRadius: '7px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
-              <rect x="1" y="1" width="6" height="9" rx="1.5" fill="#7F77DD" opacity="0.9"/>
-              <rect x="9" y="1" width="6" height="5" rx="1.5" fill="#7F77DD" opacity="0.5"/>
-              <rect x="9" y="8" width="6" height="7" rx="1.5" fill="#7F77DD" opacity="0.7"/>
-            </svg>
-          </div>
-          <div>
-            <div style={{ fontSize: '14px', fontWeight: '500', color: '#ccc', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
-              Launchpad
-            </div>
-            <div style={{ fontSize: '11px', color: '#3a3a44', marginTop: '1px' }}>sorano.space/launchpad</div>
-          </div>
+    <div style={{ background: '#1c1c24', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+      {/* Header */}
+      <div style={{ padding: '20px 28px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+          <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
+          <span style={{ fontSize: '17px', fontWeight: '600', color: '#ddd' }}>Launchpad</span>
+          <span style={{ fontSize: '13px', color: '#3a3a44' }}>sorano.space/launchpad</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ fontSize: '11px', color: '#3a3a44', display: 'flex', alignItems: 'center', gap: '5px' }}>
-            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: '#0F6E56', display: 'inline-block' }}></span>
-            actively building
-          </div>
-          <a href="https://sorano.space" style={{ padding: '6px 14px', borderRadius: '7px', background: '#fff', fontSize: '12px', color: '#1c1c24', textDecoration: 'none', fontWeight: '500' }}>
-            Create yours free →
-          </a>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#3a3a44' }}>
+          <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1D9E75', display: 'inline-block' }}></span>
+          actively building
         </div>
       </div>
 
-      <div style={{ display: 'flex' }}>
-        {COLUMNS.map(col => (
-          <div key={col.key} style={{ flex: 1, borderRight: '0.5px solid rgba(255,255,255,0.05)', padding: '20px 16px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '10px' }}>
-              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: col.color, display: 'inline-block' }}></span>
-              <span style={{ fontSize: '13px', color: '#888', fontWeight: '500' }}>{col.label}</span>
-              <span style={{ fontSize: '11px', color: '#333', background: '#22222c', padding: '1px 6px', borderRadius: '99px' }}>
-                {CARDS.filter(c => c.status === col.key).length}
-              </span>
-            </div>
-            {CARDS.filter(c => c.status === col.key).map(card => (
-              <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '11px 12px' }}>
-                <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45', marginBottom: card.tag ? '8px' : '0' }}>{card.title}</div>
-                {card.tag && (
-                  <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
+      {/* Board */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '0', height: 'calc(100vh - 57px - 44px)' }}>
+        {COLUMNS.map((col, colIdx) => {
+          const colCards = cards.filter(c => c.status === col)
+          return (
+            <div key={col} style={{ borderRight: colIdx < 3 ? '0.5px solid rgba(255,255,255,0.06)' : 'none', display: 'flex', flexDirection: 'column' }}>
+              {/* Col header */}
+              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: COL_COLORS[col], display: 'inline-block' }}></span>
+                <span style={{ fontSize: '13px', fontWeight: '500', color: '#888' }}>{col}</span>
+                <span style={{ fontSize: '11px', color: '#3a3a44', marginLeft: '2px' }}>{colCards.length}</span>
+              </div>
+
+              {/* Cards */}
+              <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', flex: 1 }}>
+                {col === 'Shipped' ? (
+                  colCards.map(card => (
+                    <div key={card.id} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
+                      <div>
+                        <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>{card.title}</div>
+                        {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_COLORS[card.tag]?.bg, color: TAG_COLORS[card.tag]?.color }}>{card.tag}</span>}
+                      </div>
+                    </div>
+                  ))
+                ) : col === 'In progress' || col === 'In review' ? (
+                  <>
+                    {colCards.map(card => (
+                      <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                        {/* Locked vote box */}
+                        <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', flexShrink: 0 }}>
+                          <span style={{ fontSize: '11px', color: '#333' }}>▲</span>
+                          <span style={{ fontSize: '13px', fontWeight: '500', color: '#444' }}>{card.votes}</span>
+                        </div>
+                        <div style={{ flex: 1, minWidth: 0 }}>
+                          <div style={{ fontSize: '14px', color: '#888', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                          {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_COLORS[card.tag]?.bg, color: TAG_COLORS[card.tag]?.color }}>{card.tag}</span>}
+                        </div>
+                      </div>
+                    ))}
+                    <div style={{ fontSize: '12px', color: '#2a2a32', padding: '8px 4px' }}>Voting disabled — in progress</div>
+                  </>
+                ) : (
+                  colCards.map(card => (
+                    <div key={card.id} style={{ background: '#22222c', border: `0.5px solid rgba(255,255,255,0.06)`, borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start', borderLeft: card.topVoted ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.06)', position: 'relative' }}>
+                      {/* Vote button */}
+                      <div style={{ position: 'relative' }}>
+                        <button
+                          onClick={() => toggleVote(card.id)}
+                          onMouseEnter={() => setTooltip(card.id)}
+                          onMouseLeave={() => setTooltip(null)}
+                          style={{ width: '44px', height: '44px', borderRadius: '8px', background: card.voted ? 'rgba(127,119,221,0.15)' : '#1c1c24', border: card.voted ? '0.5px solid rgba(127,119,221,0.4)' : '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', cursor: 'pointer', flexShrink: 0 }}
+                        >
+                          <span style={{ fontSize: '11px', color: card.voted ? '#7F77DD' : '#555' }}>▲</span>
+                          <span style={{ fontSize: '13px', fontWeight: '500', color: card.voted ? '#7F77DD' : '#666' }}>{card.votes}</span>
+                        </button>
+                        {tooltip === card.id && (
+                          <div style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '5px 10px', fontSize: '11px', color: '#aaa', whiteSpace: 'nowrap', zIndex: 10 }}>
+                            {card.voted ? 'Click to unvote' : 'Upvote this'}
+                          </div>
+                        )}
+                      </div>
+                      <div style={{ flex: 1, minWidth: 0 }}>
+                        <div style={{ fontSize: '14px', color: '#ccc', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                        {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_COLORS[card.tag]?.bg, color: TAG_COLORS[card.tag]?.color }}>{card.tag}</span>}
+                      </div>
+                    </div>
+                  ))
                 )}
               </div>
-            ))}
-          </div>
-        ))}
+            </div>
+          )
+        })}
       </div>
 
-      <div style={{ padding: '24px', borderTop: '0.5px solid rgba(255,255,255,0.05)', textAlign: 'center', marginTop: '20px' }}>
-        <span style={{ fontSize: '12px', color: '#555' }}>Public roadmap powered by </span>
-        <a href="https://sorano.space" style={{ fontSize: '12px', color: '#7F77DD', textDecoration: 'none' }}>sorano.space</a>
+      {/* Legend */}
+      <div style={{ height: '44px', borderTop: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '24px', padding: '0 28px' }}>
+        {[
+          { icon: '▪', color: '#7F77DD', label: 'Top voted' },
+          { icon: '▲', color: '#7F77DD', label: 'You voted' },
+          { icon: '▲', color: '#333', label: 'Voting locked' },
+          { icon: '✓', color: '#1D9E75', label: 'Shipped' },
+        ].map(({ icon, color, label }) => (
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#3a3a44' }}>
+            <span style={{ color }}>{icon}</span> {label}
+          </div>
+        ))}
       </div>
     </div>
   )
