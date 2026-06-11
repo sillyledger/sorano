@@ -9,14 +9,6 @@ const COLUMNS = [
   { key: 'shipped', label: 'Shipped', color: '#1D9E75' },
 ]
 
-const TAG_STYLES = {
-  UI: { bg: '#22203a', color: '#7F77DD' },
-  Core: { bg: '#26262e', color: '#666' },
-  Feature: { bg: '#122218', color: '#1D9E75' },
-  Auth: { bg: '#122218', color: '#1D9E75' },
-  UX: { bg: '#241e10', color: '#BA7517' },
-}
-
 function getVoterToken() {
   let token = localStorage.getItem('sorano_voter_token')
   if (!token) {
@@ -29,6 +21,7 @@ function getVoterToken() {
 export default function PublicBoard({ params }) {
   const [board, setBoard] = useState(null)
   const [cards, setCards] = useState([])
+  const [tags, setTags] = useState([])
   const [voteCounts, setVoteCounts] = useState({})
   const [myVotes, setMyVotes] = useState({})
   const [tooltip, setTooltip] = useState(null)
@@ -44,6 +37,9 @@ export default function PublicBoard({ params }) {
     const { data: c } = await supabase.from('cards').select('*').eq('board_id', b.id).order('created_at', { ascending: true })
     const cardList = c || []
     setCards(cardList)
+
+    const { data: t } = await supabase.from('tags').select('*').eq('board_id', b.id)
+    setTags(t || [])
 
     if (cardList.length > 0) {
       const cardIds = cardList.map(card => card.id)
@@ -87,6 +83,10 @@ export default function PublicBoard({ params }) {
       if ((voteCounts[c.id] || 0) > topCount) { topCount = voteCounts[c.id] || 0; topId = c.id }
     })
     return topCount > 0 ? topId : null
+  }
+
+  function getTag(tagId) {
+    return tags.find(t => t.id === tagId) || null
   }
 
   if (loading) return (
@@ -139,30 +139,36 @@ export default function PublicBoard({ params }) {
               {/* Cards */}
               <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', flex: 1 }}>
 
-                {col.key === 'shipped' && colCards.map(card => (
-                  <div key={card.id} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                    <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
-                    <div>
-                      <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>{card.title}</div>
-                      {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_STYLES[card.tag]?.bg, color: TAG_STYLES[card.tag]?.color }}>{card.tag}</span>}
+                {col.key === 'shipped' && colCards.map(card => {
+                  const tag = getTag(card.tag)
+                  return (
+                    <div key={card.id} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
+                      <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
+                      <div>
+                        <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>{card.title}</div>
+                        {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  )
+                })}
 
                 {(col.key === 'in-progress' || col.key === 'in-review') && (
                   <>
-                    {colCards.map(card => (
-                      <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
-                        <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', flexShrink: 0 }}>
-                          <span style={{ fontSize: '11px', color: '#333' }}>▲</span>
-                          <span style={{ fontSize: '13px', fontWeight: '500', color: '#444' }}>{voteCounts[card.id] || 0}</span>
+                    {colCards.map(card => {
+                      const tag = getTag(card.tag)
+                      return (
+                        <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
+                          <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', flexShrink: 0 }}>
+                            <span style={{ fontSize: '11px', color: '#333' }}>▲</span>
+                            <span style={{ fontSize: '13px', fontWeight: '500', color: '#444' }}>{voteCounts[card.id] || 0}</span>
+                          </div>
+                          <div style={{ flex: 1, minWidth: 0 }}>
+                            <div style={{ fontSize: '14px', color: '#888', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                            {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
+                          </div>
                         </div>
-                        <div style={{ flex: 1, minWidth: 0 }}>
-                          <div style={{ fontSize: '14px', color: '#888', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
-                          {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_STYLES[card.tag]?.bg, color: TAG_STYLES[card.tag]?.color }}>{card.tag}</span>}
-                        </div>
-                      </div>
-                    ))}
+                      )
+                    })}
                     {colCards.length > 0 && <div style={{ fontSize: '12px', color: '#2a2a32', padding: '8px 4px' }}>Voting disabled — in progress</div>}
                   </>
                 )}
@@ -171,8 +177,9 @@ export default function PublicBoard({ params }) {
                   const voted = !!myVotes[card.id]
                   const count = voteCounts[card.id] || 0
                   const isTop = card.id === topVotedId
+                  const tag = getTag(card.tag)
                   return (
-                    <div key={card.id} style={{ background: '#22222c', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.06)', border: isTop ? undefined : '0.5px solid rgba(255,255,255,0.06)', ...(isTop ? { borderLeft: '2px solid #7F77DD', borderTop: '0.5px solid rgba(255,255,255,0.06)', borderRight: '0.5px solid rgba(255,255,255,0.06)', borderBottom: '0.5px solid rgba(255,255,255,0.06)' } : {}) }}>
+                    <div key={card.id} style={{ background: '#22222c', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start', ...(isTop ? { borderLeft: '2px solid #7F77DD', borderTop: '0.5px solid rgba(255,255,255,0.06)', borderRight: '0.5px solid rgba(255,255,255,0.06)', borderBottom: '0.5px solid rgba(255,255,255,0.06)' } : { border: '0.5px solid rgba(255,255,255,0.06)' }) }}>
                       <div style={{ position: 'relative' }}>
                         <button
                           onClick={() => toggleVote(card.id)}
@@ -191,7 +198,7 @@ export default function PublicBoard({ params }) {
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
                         <div style={{ fontSize: '14px', color: '#ccc', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
-                        {card.tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: TAG_STYLES[card.tag]?.bg, color: TAG_STYLES[card.tag]?.color }}>{card.tag}</span>}
+                        {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                       </div>
                     </div>
                   )
