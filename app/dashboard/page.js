@@ -158,7 +158,7 @@ export default function Dashboard() {
             {boards.map(board => (
               <div key={board.id} onClick={() => router.push(`/board/${board.slug}`)} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
+                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30'][boards.indexOf(board) % 6], display: 'inline-block' }}></span>
                   <span style={{ fontSize: '13px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
                 </div>
                 <div style={{ fontSize: '11px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
