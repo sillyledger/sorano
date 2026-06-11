@@ -14,10 +14,6 @@ const PRESET_COLORS = [
   '#7F77DD', '#1D9E75', '#EF9F27', '#D4537E', '#378ADD', '#D85A30', '#666', '#BA7517'
 ]
 
-function tagStyle(color) {
-  return { bg: color + '22', color }
-}
-
 export default function BoardPage({ params }) {
   const [board, setBoard] = useState(null)
   const [cards, setCards] = useState([])
@@ -31,6 +27,7 @@ export default function BoardPage({ params }) {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [showRename, setShowRename] = useState(false)
   const [showTagManager, setShowTagManager] = useState(false)
+  const [labelPickerCardId, setLabelPickerCardId] = useState(null)
   const [renameValue, setRenameValue] = useState('')
   const [newTagName, setNewTagName] = useState('')
   const [newTagColor, setNewTagColor] = useState('#7F77DD')
@@ -86,8 +83,13 @@ export default function BoardPage({ params }) {
   async function deleteTag(tagId) {
     await supabase.from('tags').delete().eq('id', tagId)
     setTags(prev => prev.filter(t => t.id !== tagId))
-    // Clear tag from any cards using it
     setCards(prev => prev.map(c => c.tag === tagId ? { ...c, tag: null } : c))
+  }
+
+  async function updateCardLabel(cardId, tagId) {
+    await supabase.from('cards').update({ tag: tagId || null }).eq('id', cardId)
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, tag: tagId || null } : c))
+    setLabelPickerCardId(null)
   }
 
   async function addCard(col) {
@@ -144,21 +146,16 @@ export default function BoardPage({ params }) {
   const topVotedId = getTopVotedId()
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+    <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}
+      onClick={() => setLabelPickerCardId(null)}
+    >
 
       {/* Rename modal */}
       {showRename && (
         <div onClick={() => setShowRename(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
             <div style={{ fontSize: '15px', fontWeight: '500', color: '#ccc', marginBottom: '6px' }}>Rename board</div>
-            <input
-              autoFocus
-              value={renameValue}
-              onChange={e => setRenameValue(e.target.value)}
-              onKeyDown={e => { if (e.key === 'Enter') renameBoard(); if (e.key === 'Escape') setShowRename(false) }}
-              placeholder={board.name}
-              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '14px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' }}
-            />
+            <input autoFocus value={renameValue} onChange={e => setRenameValue(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') renameBoard(); if (e.key === 'Escape') setShowRename(false) }} placeholder={board.name} style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '14px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '16px' }} />
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button onClick={() => setShowRename(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
               <button onClick={renameBoard} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '13px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>Save</button>
@@ -186,8 +183,6 @@ export default function BoardPage({ params }) {
         <div onClick={() => setShowTagManager(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '400px', maxHeight: '80vh', overflowY: 'auto' }}>
             <div style={{ fontSize: '15px', fontWeight: '500', color: '#ccc', marginBottom: '20px' }}>Manage labels</div>
-
-            {/* Existing tags */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
               {tags.length === 0 && <div style={{ fontSize: '13px', color: '#3a3a44' }}>No labels yet. Create one below.</div>}
               {tags.map(tag => (
@@ -200,19 +195,9 @@ export default function BoardPage({ params }) {
                 </div>
               ))}
             </div>
-
-            {/* New tag form */}
             <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', paddingTop: '16px' }}>
               <div style={{ fontSize: '11px', color: '#3a3a44', marginBottom: '10px', letterSpacing: '.06em' }}>NEW LABEL</div>
-              <div style={{ display: 'flex', gap: '8px', marginBottom: '10px' }}>
-                <input
-                  value={newTagName}
-                  onChange={e => setNewTagName(e.target.value)}
-                  onKeyDown={e => e.key === 'Enter' && addTag()}
-                  placeholder="Label name..."
-                  style={{ flex: 1, padding: '8px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '13px', color: '#ccc', outline: 'none' }}
-                />
-              </div>
+              <input value={newTagName} onChange={e => setNewTagName(e.target.value)} onKeyDown={e => e.key === 'Enter' && addTag()} placeholder="Label name..." style={{ width: '100%', padding: '8px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '13px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '10px' }} />
               <div style={{ display: 'flex', gap: '6px', marginBottom: '14px', flexWrap: 'wrap' }}>
                 {PRESET_COLORS.map(c => (
                   <div key={c} onClick={() => setNewTagColor(c)} style={{ width: '20px', height: '20px', borderRadius: '50%', background: c, cursor: 'pointer', border: newTagColor === c ? '2px solid #fff' : '2px solid transparent' }}></div>
@@ -223,7 +208,6 @@ export default function BoardPage({ params }) {
                 <button onClick={addTag} style={{ marginLeft: 'auto', padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#7F77DD', fontSize: '13px', color: '#fff', cursor: 'pointer', fontWeight: '500' }}>Add label</button>
               </div>
             </div>
-
             <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
               <button onClick={() => setShowTagManager(false)} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Done</button>
             </div>
@@ -254,9 +238,7 @@ export default function BoardPage({ params }) {
           </div>
         ))}
         <div style={{ marginTop: 'auto', padding: '16px', borderTop: '0.5px solid rgba(255,255,255,0.05)' }}>
-          <div onClick={() => { supabase.auth.signOut(); router.push('/login') }} style={{ fontSize: '13px', color: '#444', cursor: 'pointer' }}>
-            ⚙ Settings
-          </div>
+          <div onClick={() => { supabase.auth.signOut(); router.push('/login') }} style={{ fontSize: '13px', color: '#444', cursor: 'pointer' }}>⚙ Settings</div>
         </div>
       </div>
 
@@ -309,6 +291,8 @@ export default function BoardPage({ params }) {
                 const count = voteCounts[card.id] || 0
                 const isTop = card.id === topVotedId
                 const tag = getTag(card.tag)
+                const pickerOpen = labelPickerCardId === card.id
+
                 return (
                   <div key={card.id} style={{ background: '#22222c', borderRadius: '8px', padding: '10px 11px', position: 'relative', borderTop: '0.5px solid rgba(255,255,255,0.05)', borderRight: '0.5px solid rgba(255,255,255,0.05)', borderBottom: '0.5px solid rgba(255,255,255,0.05)', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.05)' }}>
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
@@ -316,10 +300,34 @@ export default function BoardPage({ params }) {
                       <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#2e2e38', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
                     </div>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-                        {tag && (
-                          <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: tag.color + '22', color: tag.color }}>{tag.name}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', position: 'relative' }}>
+
+                        {/* Clickable label / add label */}
+                        <div onClick={e => { e.stopPropagation(); setLabelPickerCardId(pickerOpen ? null : card.id) }} style={{ cursor: 'pointer' }}>
+                          {tag ? (
+                            <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: tag.color + '22', color: tag.color }}>{tag.name}</span>
+                          ) : (
+                            <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', color: '#333', border: '0.5px dashed #2e2e38' }}>+ label</span>
+                          )}
+                        </div>
+
+                        {/* Label picker dropdown */}
+                        {pickerOpen && (
+                          <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '22px', left: 0, background: '#2a2a34', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', zIndex: 30, minWidth: '140px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
+                            <div onClick={() => updateCardLabel(card.id, null)} style={{ padding: '6px 10px', fontSize: '12px', color: '#555', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                              <span style={{ fontSize: '10px' }}>✕</span> No label
+                            </div>
+                            {tags.length === 0 && <div style={{ padding: '6px 10px', fontSize: '11px', color: '#3a3a44' }}>No labels yet</div>}
+                            {tags.map(t => (
+                              <div key={t.id} onClick={() => updateCardLabel(card.id, t.id)} style={{ padding: '6px 10px', fontSize: '12px', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.color, flexShrink: 0, display: 'inline-block' }}></span>
+                                <span style={{ color: t.color }}>{t.name}</span>
+                                {card.tag === t.id && <span style={{ marginLeft: 'auto', color: '#7F77DD', fontSize: '10px' }}>✓</span>}
+                              </div>
+                            ))}
+                          </div>
                         )}
+
                         <select onChange={e => moveCard(card.id, e.target.value)} value={card.status} style={{ fontSize: '11px', color: '#333', background: 'transparent', border: 'none', cursor: 'pointer', outline: 'none' }}>
                           {COLUMNS.map(c => <option key={c.key} value={c.key} style={{ background: '#22222c', color: '#aaa' }}>{c.label}</option>)}
                         </select>
