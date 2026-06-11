@@ -9,6 +9,8 @@ export default function Dashboard() {
   const [loading, setLoading] = useState(true)
   const [user, setUser] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [boardToDelete, setBoardToDelete] = useState(null)
   const [stats, setStats] = useState({ planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 })
   const [recentCards, setRecentCards] = useState([])
   const router = useRouter()
@@ -48,6 +50,14 @@ export default function Dashboard() {
     await supabase.from('boards').insert({ name: newBoard, slug, owner_id: user.id })
     setNewBoard('')
     setShowModal(false)
+    fetchBoards(user.id)
+  }
+
+  async function deleteBoard() {
+    if (!boardToDelete) return
+    await supabase.from('boards').delete().eq('id', boardToDelete.id)
+    setShowDeleteConfirm(false)
+    setBoardToDelete(null)
     fetchBoards(user.id)
   }
 
@@ -96,6 +106,19 @@ export default function Dashboard() {
             <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
               <button onClick={() => setShowModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '14px', color: '#444', cursor: 'pointer' }}>Cancel</button>
               <button onClick={createBoard} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '14px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>Create board</button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showDeleteConfirm && (
+        <div onClick={() => setShowDeleteConfirm(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
+            <div style={{ fontSize: '15px', fontWeight: '500', color: '#ccc', marginBottom: '8px' }}>Delete board?</div>
+            <div style={{ fontSize: '13px', color: '#555', marginBottom: '24px' }}>This will permanently delete <span style={{ color: '#aaa' }}>{boardToDelete?.name}</span> and all its cards. This cannot be undone.</div>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button onClick={() => { setShowDeleteConfirm(false); setBoardToDelete(null) }} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
+              <button onClick={deleteBoard} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#E24B4A', fontSize: '13px', color: '#fff', cursor: 'pointer', fontWeight: '500' }}>Delete board</button>
             </div>
           </div>
         </div>
@@ -156,12 +179,18 @@ export default function Dashboard() {
         ) : (
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '32px' }}>
             {boards.map((board, i) => (
-              <div key={board.id} onClick={() => router.push(`/board/${board.slug}`)} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}>
-                <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                  <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: COLORS[i % 6], display: 'inline-block' }}></span>
-                  <span style={{ fontSize: '14px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
+              <div key={board.id} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', position: 'relative' }}>
+                <div onClick={() => router.push(`/board/${board.slug}`)} style={{ cursor: 'pointer' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: COLORS[i % 6], display: 'inline-block' }}></span>
+                    <span style={{ fontSize: '14px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
+                  </div>
+                  <div style={{ fontSize: '12px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
                 </div>
-                <div style={{ fontSize: '12px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
+                <div
+                  onClick={e => { e.stopPropagation(); setBoardToDelete(board); setShowDeleteConfirm(true) }}
+                  style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '16px', color: '#2e2e38', cursor: 'pointer', lineHeight: 1, padding: '2px 6px', borderRadius: '4px' }}
+                >···</div>
               </div>
             ))}
           </div>
