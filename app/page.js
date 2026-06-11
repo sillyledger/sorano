@@ -42,6 +42,11 @@ export default function Home() {
             <a href="https://app.sorano.space/login" style={{ padding: '12px 28px', borderRadius: '9px', background: '#fff', fontSize: '14px', color: '#1c1c24', textDecoration: 'none', fontWeight: '500' }}>Start for free</a>
             <a href="https://sorano.space/example" style={{ padding: '12px 28px', borderRadius: '9px', background: 'transparent', border: '0.5px solid rgba(255,255,255,0.1)', fontSize: '14px', color: '#666', textDecoration: 'none' }}>View an example</a>
           </div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+  <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
+  <span style={{ fontSize: '15px', color: '#aaa' }}>90% of founders only ever need the free plan.</span>
+  <div style={{ height: '1px', width: '40px', background: 'rgba(255,255,255,0.08)' }}></div>
+</div>
         </div>
 
         {/* Features */}
