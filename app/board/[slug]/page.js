@@ -31,6 +31,8 @@ export default function BoardPage({ params }) {
   const [pickerNewName, setPickerNewName] = useState('')
   const [pickerNewColor, setPickerNewColor] = useState('#7F77DD')
   const [pickerShowCreate, setPickerShowCreate] = useState(false)
+  const [editingNoteCardId, setEditingNoteCardId] = useState(null)
+  const [noteValue, setNoteValue] = useState('')
   const [renameValue, setRenameValue] = useState('')
   const [newTagName, setNewTagName] = useState('')
   const [newTagColor, setNewTagColor] = useState('#7F77DD')
@@ -50,14 +52,11 @@ export default function BoardPage({ params }) {
     const { data: b } = await supabase.from('boards').select('*').eq('slug', params.slug).eq('owner_id', userId).single()
     if (!b) { router.push('/dashboard'); return }
     setBoard(b)
-
     const { data: c } = await supabase.from('cards').select('*').eq('board_id', b.id).order('created_at', { ascending: true })
     const cardList = c || []
     setCards(cardList)
-
     const { data: t } = await supabase.from('tags').select('*').eq('board_id', b.id).order('created_at', { ascending: true })
     setTags(t || [])
-
     if (cardList.length > 0) {
       const cardIds = cardList.map(card => card.id)
       const { data: votes } = await supabase.from('votes').select('*').in('card_id', cardIds)
@@ -66,7 +65,6 @@ export default function BoardPage({ params }) {
       ;(votes || []).forEach(v => { counts[v.card_id] = (counts[v.card_id] || 0) + 1 })
       setVoteCounts(counts)
     }
-
     setLoading(false)
   }
 
@@ -129,8 +127,20 @@ export default function BoardPage({ params }) {
   }
 
   async function moveCard(cardId, newStatus) {
-    await supabase.from('cards').update({ status: newStatus }).eq('id', cardId)
-    setCards(cards.map(c => c.id === cardId ? { ...c, status: newStatus } : c))
+    const isShipping = newStatus === 'shipped'
+    const wasShipped = cards.find(c => c.id === cardId)?.status === 'shipped'
+    const updates = { status: newStatus }
+    if (isShipping && !wasShipped) updates.shipped_at = new Date().toISOString()
+    if (!isShipping && wasShipped) { updates.shipped_at = null; updates.shipped_note = null }
+    await supabase.from('cards').update(updates).eq('id', cardId)
+    setCards(cards.map(c => c.id === cardId ? { ...c, ...updates } : c))
+  }
+
+  async function saveNote(cardId) {
+    await supabase.from('cards').update({ shipped_note: noteValue.trim() || null }).eq('id', cardId)
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, shipped_note: noteValue.trim() || null } : c))
+    setEditingNoteCardId(null)
+    setNoteValue('')
   }
 
   async function renameBoard() {
@@ -164,6 +174,11 @@ export default function BoardPage({ params }) {
     setPickerShowCreate(false)
     setPickerNewName('')
     setPickerNewColor('#7F77DD')
+  }
+
+  function formatDate(iso) {
+    if (!iso) return ''
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
   }
 
   if (loading) return <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
@@ -317,6 +332,7 @@ export default function BoardPage({ params }) {
                 const isTop = card.id === topVotedId
                 const tag = getTag(card.tag)
                 const pickerOpen = labelPickerCardId === card.id
+                const isEditingNote = editingNoteCardId === card.id
 
                 return (
                   <div key={card.id} style={{ background: '#22222c', borderRadius: '8px', padding: '10px 11px', position: 'relative', borderTop: '0.5px solid rgba(255,255,255,0.05)', borderRight: '0.5px solid rgba(255,255,255,0.05)', borderBottom: '0.5px solid rgba(255,255,255,0.05)', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.05)' }}>
@@ -324,10 +340,40 @@ export default function BoardPage({ params }) {
                       <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45' }}>{card.title}</div>
                       <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#2e2e38', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
                     </div>
+
+                    {/* Shipped note */}
+                    {col.key === 'shipped' && (
+                      <div style={{ marginBottom: '7px' }}>
+                        {isEditingNote ? (
+                          <div onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                            <textarea
+                              autoFocus
+                              value={noteValue}
+                              onChange={e => setNoteValue(e.target.value)}
+                              placeholder="Add a release note..."
+                              rows={2}
+                              style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '11px', color: '#ccc', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                            />
+                            <div style={{ display: 'flex', gap: '6px' }}>
+                              <button onClick={() => saveNote(card.id)} style={{ fontSize: '11px', color: '#7F77DD', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Save</button>
+                              <button onClick={() => { setEditingNoteCardId(null); setNoteValue('') }} style={{ fontSize: '11px', color: '#444', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Cancel</button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div onClick={e => { e.stopPropagation(); setEditingNoteCardId(card.id); setNoteValue(card.shipped_note || '') }} style={{ cursor: 'pointer' }}>
+                            {card.shipped_note ? (
+                              <div style={{ fontSize: '11px', color: '#555', lineHeight: '1.5' }}>{card.shipped_note}</div>
+                            ) : (
+                              <div style={{ fontSize: '11px', color: '#2e2e38', fontStyle: 'italic' }}>+ add release note</div>
+                            )}
+                          </div>
+                        )}
+                        {card.shipped_at && <div style={{ fontSize: '10px', color: '#2e2e38', marginTop: '4px' }}>{formatDate(card.shipped_at)}</div>}
+                      </div>
+                    )}
+
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', position: 'relative' }}>
-
-                        {/* Clickable label */}
                         <div onClick={e => { e.stopPropagation(); openPicker(pickerOpen ? null : card.id) }} style={{ cursor: 'pointer' }}>
                           {tag ? (
                             <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: tag.color + '22', color: tag.color }}>{tag.name}</span>
@@ -336,16 +382,11 @@ export default function BoardPage({ params }) {
                           )}
                         </div>
 
-                        {/* Label picker dropdown */}
                         {pickerOpen && (
                           <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', top: '22px', left: 0, background: '#2a2a34', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', zIndex: 30, minWidth: '160px', boxShadow: '0 4px 20px rgba(0,0,0,0.4)' }}>
-
-                            {/* Remove label */}
                             <div onClick={() => updateCardLabel(card.id, null)} style={{ padding: '6px 10px', fontSize: '12px', color: '#555', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                               <span style={{ fontSize: '10px' }}>✕</span> No label
                             </div>
-
-                            {/* Existing labels */}
                             {tags.map(t => (
                               <div key={t.id} onClick={() => updateCardLabel(card.id, t.id)} style={{ padding: '6px 10px', fontSize: '12px', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
                                 <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: t.color, flexShrink: 0, display: 'inline-block' }}></span>
@@ -353,8 +394,6 @@ export default function BoardPage({ params }) {
                                 {card.tag === t.id && <span style={{ marginLeft: 'auto', color: '#7F77DD', fontSize: '10px' }}>✓</span>}
                               </div>
                             ))}
-
-                            {/* Divider + create new */}
                             <div style={{ borderTop: '0.5px solid rgba(255,255,255,0.06)', marginTop: '4px', paddingTop: '4px' }}>
                               {!pickerShowCreate ? (
                                 <div onClick={() => setPickerShowCreate(true)} style={{ padding: '6px 10px', fontSize: '12px', color: '#555', cursor: 'pointer', borderRadius: '5px', display: 'flex', alignItems: 'center', gap: '6px' }}>
@@ -362,14 +401,7 @@ export default function BoardPage({ params }) {
                                 </div>
                               ) : (
                                 <div style={{ padding: '6px 8px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                                  <input
-                                    autoFocus
-                                    value={pickerNewName}
-                                    onChange={e => setPickerNewName(e.target.value)}
-                                    onKeyDown={e => { if (e.key === 'Enter') addTagFromPicker(card.id); if (e.key === 'Escape') setPickerShowCreate(false) }}
-                                    placeholder="Label name..."
-                                    style={{ padding: '5px 8px', borderRadius: '5px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '11px', color: '#ccc', outline: 'none', width: '100%', boxSizing: 'border-box' }}
-                                  />
+                                  <input autoFocus value={pickerNewName} onChange={e => setPickerNewName(e.target.value)} onKeyDown={e => { if (e.key === 'Enter') addTagFromPicker(card.id); if (e.key === 'Escape') setPickerShowCreate(false) }} placeholder="Label name..." style={{ padding: '5px 8px', borderRadius: '5px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '11px', color: '#ccc', outline: 'none', width: '100%', boxSizing: 'border-box' }} />
                                   <div style={{ display: 'flex', gap: '4px', flexWrap: 'wrap' }}>
                                     {PRESET_COLORS.map(c => (
                                       <div key={c} onClick={() => setPickerNewColor(c)} style={{ width: '14px', height: '14px', borderRadius: '50%', background: c, cursor: 'pointer', border: pickerNewColor === c ? '2px solid #fff' : '2px solid transparent', flexShrink: 0 }}></div>
