@@ -24,6 +24,7 @@ export default function BoardPage({ params }) {
   const [boards, setBoards] = useState([])
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [voteCounts, setVoteCounts] = useState({})
   const [newCard, setNewCard] = useState({ col: null, title: '', tag: '' })
   const [showMenu, setShowMenu] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -46,7 +47,18 @@ export default function BoardPage({ params }) {
     if (!b) { router.push('/dashboard'); return }
     setBoard(b)
     const { data: c } = await supabase.from('cards').select('*').eq('board_id', b.id).order('created_at', { ascending: true })
-    setCards(c || [])
+    const cardList = c || []
+    setCards(cardList)
+
+    if (cardList.length > 0) {
+      const cardIds = cardList.map(card => card.id)
+      const { data: votes } = await supabase.from('votes').select('*').in('card_id', cardIds)
+      const counts = {}
+      cardIds.forEach(id => counts[id] = 0)
+      ;(votes || []).forEach(v => { counts[v.card_id] = (counts[v.card_id] || 0) + 1 })
+      setVoteCounts(counts)
+    }
+
     setLoading(false)
   }
 
@@ -91,7 +103,18 @@ export default function BoardPage({ params }) {
     router.push('/dashboard')
   }
 
+  function getTopVotedId() {
+    const plannedCards = cards.filter(c => c.status === 'planned')
+    let topId = null, topCount = 0
+    plannedCards.forEach(c => {
+      if ((voteCounts[c.id] || 0) > topCount) { topCount = voteCounts[c.id] || 0; topId = c.id }
+    })
+    return topCount > 0 ? topId : null
+  }
+
   if (loading) return <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
+
+  const topVotedId = getTopVotedId()
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
@@ -129,6 +152,7 @@ export default function BoardPage({ params }) {
         </div>
       )}
 
+      {/* Sidebar */}
       <div style={{ width: '190px', flexShrink: 0, background: '#1c1c24', borderRight: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 0' }}>
         <div style={{ padding: '0 16px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -157,6 +181,7 @@ export default function BoardPage({ params }) {
         </div>
       </div>
 
+      {/* Main */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
         <div style={{ padding: '14px 20px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
           <div style={{ fontSize: '14px', fontWeight: '500', color: '#ccc', display: 'flex', alignItems: 'center', gap: '8px' }}>
@@ -179,12 +204,8 @@ export default function BoardPage({ params }) {
               {showMenu && (
                 <div onClick={() => setShowMenu(false)} style={{ position: 'fixed', inset: 0, zIndex: 40 }}>
                   <div onClick={e => e.stopPropagation()} style={{ position: 'absolute', right: 0, top: '32px', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '4px', minWidth: '160px', zIndex: 41 }}>
-                    <div onClick={() => { setShowMenu(false); setRenameValue(board.name); setShowRename(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#888', cursor: 'pointer', borderRadius: '6px' }}>
-                      Rename board
-                    </div>
-                    <div onClick={() => { setShowMenu(false); setShowDeleteConfirm(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#E24B4A', cursor: 'pointer', borderRadius: '6px' }}>
-                      Delete board
-                    </div>
+                    <div onClick={() => { setShowMenu(false); setRenameValue(board.name); setShowRename(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#888', cursor: 'pointer', borderRadius: '6px' }}>Rename board</div>
+                    <div onClick={() => { setShowMenu(false); setShowDeleteConfirm(true) }} style={{ padding: '8px 12px', fontSize: '13px', color: '#E24B4A', cursor: 'pointer', borderRadius: '6px' }}>Delete board</div>
                   </div>
                 </div>
               )}
@@ -204,22 +225,34 @@ export default function BoardPage({ params }) {
                 <span onClick={() => setNewCard({ col: col.key, title: '', tag: '' })} style={{ fontSize: '15px', color: '#2e2e38', cursor: 'pointer', lineHeight: 1 }}>+</span>
               </div>
 
-              {cards.filter(c => c.status === col.key).map(card => (
-                <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)', borderRadius: '8px', padding: '10px 11px', position: 'relative' }}>
-                  <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
-                    <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45' }}>{card.title}</div>
-                    <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#2e2e38', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
+              {cards.filter(c => c.status === col.key).map(card => {
+                const count = voteCounts[card.id] || 0
+                const isTop = card.id === topVotedId
+                return (
+                  <div key={card.id} style={{ background: '#22222c', borderRadius: '8px', padding: '10px 11px', position: 'relative', borderTop: '0.5px solid rgba(255,255,255,0.05)', borderRight: '0.5px solid rgba(255,255,255,0.05)', borderBottom: '0.5px solid rgba(255,255,255,0.05)', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.05)' }}>
+                    <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
+                      <div style={{ fontSize: '13px', fontWeight: '500', color: '#aaa', lineHeight: '1.45' }}>{card.title}</div>
+                      <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#2e2e38', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
+                        {card.tag && (
+                          <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
+                        )}
+                        <select onChange={e => moveCard(card.id, e.target.value)} value={card.status} style={{ fontSize: '11px', color: '#333', background: 'transparent', border: 'none', cursor: 'pointer', outline: 'none' }}>
+                          {COLUMNS.map(c => <option key={c.key} value={c.key} style={{ background: '#22222c', color: '#aaa' }}>{c.label}</option>)}
+                        </select>
+                      </div>
+                      {count > 0 && (
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '3px', fontSize: '11px', color: isTop ? '#7F77DD' : '#444' }}>
+                          <span style={{ fontSize: '9px' }}>▲</span>
+                          <span>{count}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap' }}>
-                    {card.tag && (
-                      <span style={{ fontSize: '10px', padding: '2px 7px', borderRadius: '99px', fontWeight: '500', background: TAG_STYLES[card.tag]?.bg || '#26262e', color: TAG_STYLES[card.tag]?.color || '#666' }}>{card.tag}</span>
-                    )}
-                    <select onChange={e => moveCard(card.id, e.target.value)} value={card.status} style={{ fontSize: '11px', color: '#333', background: 'transparent', border: 'none', cursor: 'pointer', outline: 'none' }}>
-                      {COLUMNS.map(c => <option key={c.key} value={c.key} style={{ background: '#22222c', color: '#aaa' }}>{c.label}</option>)}
-                    </select>
-                  </div>
-                </div>
-              ))}
+                )
+              })}
 
               {newCard.col === col.key ? (
                 <div style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '8px', padding: '10px 11px', display: 'flex', flexDirection: 'column', gap: '6px' }}>
