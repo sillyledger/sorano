@@ -329,7 +329,7 @@ export default function SettingsModal({ user, onClose }) {
                       <span style={{ fontSize: '14px', fontWeight: '500', color: '#ccc' }}>Lifetime</span>
                       <span style={{ fontSize: '10px', fontWeight: '500', color: '#EF9F27', background: 'rgba(239,159,39,0.12)', border: '0.5px solid rgba(239,159,39,0.3)', padding: '2px 7px', borderRadius: '20px' }}>Best value</span>
                     </div>
-                    <div style={{ fontSize: '12px', color: '#444' }}>Everything in Pro · Pay once, use forever · All future features</div>
+                    <div style={{ fontSize: '12px', color: '#444', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>Everything in Pro · Pay once, use forever · All future features</div>
                   </div>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
                     <div style={{ textAlign: 'right' }}>
