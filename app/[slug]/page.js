@@ -2,6 +2,13 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 
+// ── Plan check — swap this out when Paddle is ready ──────────────────────────
+function isVotingEnabled() {
+  // TODO: read from profiles table once payments are live
+  return false
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 const COLUMNS = [
   { key: 'planned', label: 'Planned', color: '#555' },
   { key: 'in-progress', label: 'In progress', color: '#378ADD' },
@@ -61,6 +68,7 @@ export default function PublicBoard({ params }) {
   }
 
   async function toggleVote(cardId) {
+    if (!isVotingEnabled()) return
     const token = getVoterToken()
     const hasVoted = myVotes[cardId]
 
@@ -105,6 +113,7 @@ export default function PublicBoard({ params }) {
   )
 
   const topVotedId = getTopVotedId()
+  const votingEnabled = isVotingEnabled()
 
   return (
     <div style={{ minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
@@ -188,17 +197,26 @@ export default function PublicBoard({ params }) {
                     <div key={card.id} style={{ background: '#22222c', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start', ...(isTop ? { borderLeft: '2px solid #7F77DD', borderTop: '0.5px solid rgba(255,255,255,0.06)', borderRight: '0.5px solid rgba(255,255,255,0.06)', borderBottom: '0.5px solid rgba(255,255,255,0.06)' } : { border: '0.5px solid rgba(255,255,255,0.06)' }) }}>
                       <div style={{ position: 'relative' }}>
                         <button
-                          onClick={() => toggleVote(card.id)}
+                          onClick={() => votingEnabled && toggleVote(card.id)}
                           onMouseEnter={() => setTooltip(card.id)}
                           onMouseLeave={() => setTooltip(null)}
-                          style={{ width: '44px', height: '44px', borderRadius: '8px', background: voted ? 'rgba(127,119,221,0.15)' : '#1c1c24', border: voted ? '0.5px solid rgba(127,119,221,0.4)' : '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', cursor: 'pointer', flexShrink: 0 }}
+                          style={{
+                            width: '44px', height: '44px', borderRadius: '8px',
+                            background: voted && votingEnabled ? 'rgba(127,119,221,0.15)' : '#1c1c24',
+                            border: voted && votingEnabled ? '0.5px solid rgba(127,119,221,0.4)' : '0.5px solid rgba(255,255,255,0.06)',
+                            display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px',
+                            cursor: votingEnabled ? 'pointer' : 'not-allowed',
+                            flexShrink: 0,
+                          }}
                         >
-                          <span style={{ fontSize: '11px', color: voted ? '#7F77DD' : '#555' }}>▲</span>
-                          <span style={{ fontSize: '13px', fontWeight: '500', color: voted ? '#7F77DD' : '#666' }}>{count}</span>
+                          <span style={{ fontSize: '11px', color: voted && votingEnabled ? '#7F77DD' : '#333' }}>▲</span>
+                          <span style={{ fontSize: '13px', fontWeight: '500', color: voted && votingEnabled ? '#7F77DD' : '#444' }}>{count}</span>
                         </button>
                         {tooltip === card.id && (
                           <div style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '5px 10px', fontSize: '11px', color: '#aaa', whiteSpace: 'nowrap', zIndex: 10 }}>
-                            {voted ? 'Click to unvote' : 'Upvote this'}
+                            {!votingEnabled ? (
+                              <><span style={{ color: '#7F77DD', fontWeight: '500' }}>Pro feature</span> · Upgrade to enable voting</>
+                            ) : voted ? 'Click to unvote' : 'Upvote this'}
                           </div>
                         )}
                       </div>
