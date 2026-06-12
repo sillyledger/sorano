@@ -2,6 +2,7 @@
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
+import SettingsModal from './SettingsModal'
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([])
@@ -10,6 +11,7 @@ export default function Dashboard() {
   const [authChecked, setAuthChecked] = useState(false)
   const [user, setUser] = useState(null)
   const [showModal, setShowModal] = useState(false)
+  const [showSettings, setShowSettings] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
   const [boardToDelete, setBoardToDelete] = useState(null)
   const [stats, setStats] = useState({ planned: 0, 'in-progress': 0, 'in-review': 0, shipped: 0 })
@@ -104,6 +106,10 @@ export default function Dashboard() {
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
 
+      {showSettings && (
+        <SettingsModal user={user} onClose={() => setShowSettings(false)} />
+      )}
+
       {showModal && (
         <div onClick={() => setShowModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
           <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
@@ -159,7 +165,13 @@ export default function Dashboard() {
         ))}
         <div style={{ marginTop: 'auto', padding: '16px', borderTop: '0.5px solid rgba(255,255,255,0.05)' }}>
           <div style={{ fontSize: '12px', color: '#444', marginBottom: '10px' }}>{user?.email}</div>
-          <div onClick={handleSignOut} style={{ fontSize: '13px', color: '#3a3a44', cursor: 'pointer' }}>Sign out</div>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <div onClick={() => setShowSettings(true)} style={{ fontSize: '13px', color: '#3a3a44', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><circle cx="6.5" cy="6.5" r="2" stroke="currentColor" strokeWidth="1.2"/><path d="M6.5 1v1.2M6.5 10.8V12M1 6.5h1.2M10.8 6.5H12M2.757 2.757l.849.849M9.394 9.394l.849.849M2.757 10.243l.849-.849M9.394 3.606l.849-.849" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/></svg>
+              Settings
+            </div>
+            <div onClick={handleSignOut} style={{ fontSize: '13px', color: '#3a3a44', cursor: 'pointer' }}>Sign out</div>
+          </div>
         </div>
       </div>
 
