@@ -40,10 +40,21 @@ const DATE_FORMATS = [
   { value: 'YYYY-MM-DD', label: '2026-06-12' },
 ]
 
+function BillingIcon() {
+  return (
+    <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <rect x="1.5" y="3.5" width="12" height="9" rx="1.5" stroke="currentColor" strokeWidth="1.2"/>
+      <path d="M1.5 6.5h12" stroke="currentColor" strokeWidth="1.2"/>
+      <rect x="3.5" y="8.5" width="3" height="1.5" rx="0.5" fill="currentColor"/>
+    </svg>
+  )
+}
+
 const NAV = [
   { key: 'account', label: 'Account', icon: AccountIcon },
   { key: 'preferences', label: 'Preferences', icon: PreferencesIcon },
   { key: 'security', label: 'Security', icon: SecurityIcon },
+  { key: 'billing', label: 'Billing', icon: BillingIcon },
 ]
 
 function AccountIcon() {
@@ -261,6 +272,76 @@ export default function SettingsModal({ user, onClose }) {
                 {emailMsg && <Msg msg={emailMsg} />}
                 <SaveBtn onClick={updateEmail} loading={emailLoading}>Update email</SaveBtn>
               </Row>
+            </Section>
+          )}
+
+          {tab === 'billing' && (
+            <Section title="Billing" subtitle="Manage your plan.">
+              <SectionLabel>PLANS</SectionLabel>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+
+                {/* Free */}
+                <div style={{
+                  padding: '16px 20px', borderRadius: '10px',
+                  border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                }}>
+                  <div>
+                    <div style={{ fontSize: '14px', fontWeight: '500', color: '#bbb', marginBottom: '3px' }}>Free</div>
+                    <div style={{ fontSize: '12px', color: '#444' }}>3 public boards · Voting disabled · Public roadmap</div>
+                  </div>
+                  <div style={{ textAlign: 'right', flexShrink: 0 }}>
+                    <span style={{ fontSize: '20px', fontWeight: '600', color: '#888' }}>$0</span>
+                    <span style={{ fontSize: '12px', color: '#444' }}> /mo</span>
+                  </div>
+                </div>
+
+                {/* Pro */}
+                <div style={{
+                  padding: '16px 20px', borderRadius: '10px',
+                  border: '0.5px solid rgba(127,119,221,0.4)', background: 'rgba(127,119,221,0.05)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#ccc' }}>Pro</span>
+                      <span style={{ fontSize: '10px', fontWeight: '500', color: '#7F77DD', background: 'rgba(127,119,221,0.15)', border: '0.5px solid rgba(127,119,221,0.3)', padding: '2px 7px', borderRadius: '20px' }}>Upgrade</span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#444' }}>Unlimited boards · Upvoting enabled · Custom labels · Remove branding</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '20px', fontWeight: '600', color: '#ccc' }}>$4</span>
+                      <span style={{ fontSize: '12px', color: '#444' }}> /mo</span>
+                    </div>
+                    <button style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: '#7F77DD', color: '#fff', fontSize: '13px', fontWeight: '500', cursor: 'not-allowed', opacity: 0.7 }}>Upgrade</button>
+                  </div>
+                </div>
+
+                {/* Lifetime */}
+                <div style={{
+                  padding: '16px 20px', borderRadius: '10px',
+                  border: '0.5px solid rgba(239,159,39,0.35)', background: 'rgba(239,159,39,0.04)',
+                  display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '16px',
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '3px' }}>
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#ccc' }}>Lifetime</span>
+                      <span style={{ fontSize: '10px', fontWeight: '500', color: '#EF9F27', background: 'rgba(239,159,39,0.12)', border: '0.5px solid rgba(239,159,39,0.3)', padding: '2px 7px', borderRadius: '20px' }}>Best value</span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#444' }}>Everything in Pro · Pay once, use forever · All future features</div>
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '16px', flexShrink: 0 }}>
+                    <div style={{ textAlign: 'right' }}>
+                      <span style={{ fontSize: '20px', fontWeight: '600', color: '#ccc' }}>$60</span>
+                      <span style={{ fontSize: '12px', color: '#444' }}> once</span>
+                    </div>
+                    <button style={{ padding: '8px 16px', borderRadius: '8px', border: '0.5px solid rgba(239,159,39,0.3)', background: 'rgba(239,159,39,0.15)', color: '#EF9F27', fontSize: '13px', fontWeight: '500', cursor: 'not-allowed', opacity: 0.7 }}>Get lifetime</button>
+                  </div>
+                </div>
+
+              </div>
+              <div style={{ fontSize: '11px', color: '#333', marginTop: '4px' }}>Payments coming soon — check back shortly.</div>
             </Section>
           )}
         </div>
