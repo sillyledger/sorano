@@ -1,5 +1,4 @@
 import { ImageResponse } from 'next/og'
-import { createClient } from '@supabase/supabase-js'
 
 export const runtime = 'edge'
 
@@ -7,20 +6,7 @@ export const size = { width: 1200, height: 630 }
 export const contentType = 'image/png'
 
 export default async function Image({ params }) {
-  const supabase = createClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
-  )
-
-  const { data: board } = await supabase
-    .from('boards')
-    .select('name, slug, description')
-    .eq('slug', params.slug)
-    .single()
-
-  const name = board?.name || 'Sorano board'
-  const slug = board?.slug || params.slug
-  const description = board?.description || 'Public roadmap & changelog'
+  const slug = params.slug
 
   return new ImageResponse(
     (
@@ -58,22 +44,15 @@ export default async function Image({ params }) {
           <span style={{ fontSize: '16px', color: '#555', fontWeight: '500' }}>sorano</span>
         </div>
 
-        {/* Middle: board name + description */}
+        {/* Middle: slug as title */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              gap: '14px',
-            }}
-          >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
             <span
               style={{
                 width: '10px',
                 height: '10px',
                 borderRadius: '50%',
                 background: '#7F77DD',
-                display: 'inline-block',
                 flexShrink: 0,
               }}
             />
@@ -86,17 +65,15 @@ export default async function Image({ params }) {
                 letterSpacing: '-0.03em',
               }}
             >
-              {name}
+              {slug}
             </span>
           </div>
-          {description && (
-            <span style={{ fontSize: '22px', color: '#555', paddingLeft: '24px' }}>
-              {description}
-            </span>
-          )}
+          <span style={{ fontSize: '22px', color: '#555', paddingLeft: '24px' }}>
+            Public roadmap &amp; changelog
+          </span>
         </div>
 
-        {/* Bottom: slug + status */}
+        {/* Bottom: url + status */}
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <span style={{ fontSize: '16px', color: '#3a3a44' }}>
             sorano.space/{slug}
@@ -108,7 +85,6 @@ export default async function Image({ params }) {
                 height: '7px',
                 borderRadius: '50%',
                 background: '#1D9E75',
-                display: 'inline-block',
               }}
             />
             <span style={{ fontSize: '14px', color: '#3a3a44' }}>actively building</span>
