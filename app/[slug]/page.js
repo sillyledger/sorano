@@ -1,13 +1,7 @@
 'use client'
 import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
-
-// ── Plan check — swap this out when Paddle is ready ──────────────────────────
-function isVotingEnabled() {
-  // TODO: read from profiles table once payments are live
-  return false
-}
-// ─────────────────────────────────────────────────────────────────────────────
+import { isVotingEnabled } from '../../lib/plan'
 
 const COLUMNS = [
   { key: 'planned', label: 'Planned', color: '#555' },
