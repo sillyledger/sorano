@@ -16,6 +16,7 @@ export async function generateMetadata({ params }) {
   const name = board?.name || 'Sorano board'
   const slug = board?.slug || params.slug
   const description = board?.description || 'Public roadmap & changelog'
+  const imageUrl = `https://sorano.space/${slug}/opengraph-image`
 
   return {
     title: `${name} — Sorano`,
@@ -26,11 +27,13 @@ export async function generateMetadata({ params }) {
       url: `https://sorano.space/${slug}`,
       siteName: 'Sorano',
       type: 'website',
+      images: [{ url: imageUrl, width: 1200, height: 630 }],
     },
     twitter: {
       card: 'summary_large_image',
       title: name,
       description,
+      images: [imageUrl],
     },
   }
 }
