@@ -4,6 +4,15 @@ import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 import SettingsModal from './SettingsModal'
 
+// ── Plan check — swap this out when Paddle is ready ──────────────────────────
+const FREE_BOARD_LIMIT = 3
+
+function getUserPlan() {
+  // TODO: read from profiles table once payments are live
+  return 'free'
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
 export default function Dashboard() {
   const [boards, setBoards] = useState([])
   const [newBoard, setNewBoard] = useState('')
@@ -53,6 +62,7 @@ export default function Dashboard() {
 
   async function createBoard() {
     if (!newBoard.trim() || !user) return
+    if (getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT) return
     const slug = newBoard.toLowerCase().replace(/\s+/g, '-')
     await supabase.from('boards').insert({ name: newBoard, slug, owner_id: user.id })
     setNewBoard('')
@@ -72,6 +82,13 @@ export default function Dashboard() {
     await supabase.auth.signOut()
     router.push('/login')
   }
+
+  function handleNewBoard() {
+    if (getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT) return
+    setShowModal(true)
+  }
+
+  const isAtLimit = getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT
 
   const statItems = [
     { label: 'Planned', key: 'planned', color: '#444' },
@@ -94,7 +111,6 @@ export default function Dashboard() {
 
   const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30']
 
-  // Block render until auth is confirmed — prevents flash of dashboard for logged-out users
   if (!authChecked) {
     return (
       <div style={{ minHeight: '100vh', background: '#1c1c24', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -181,9 +197,41 @@ export default function Dashboard() {
             <h1 style={{ fontSize: '20px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
             <p style={{ fontSize: '13px', color: '#444' }}>Your public roadmaps</p>
           </div>
-          <button onClick={() => setShowModal(true)} style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: '#fff', fontSize: '14px', color: '#1c1c24', cursor: 'pointer', fontWeight: '500' }}>
-            + New board
-          </button>
+
+          {/* New board button — disabled at free limit */}
+          <div style={{ position: 'relative' }} className="new-board-wrap">
+            <button
+              onClick={handleNewBoard}
+              disabled={isAtLimit}
+              title={isAtLimit ? 'Upgrade to Pro to add more boards' : ''}
+              style={{
+                padding: '8px 18px', borderRadius: '8px', border: 'none',
+                background: isAtLimit ? '#2a2a34' : '#fff',
+                fontSize: '14px',
+                color: isAtLimit ? '#444' : '#1c1c24',
+                cursor: isAtLimit ? 'not-allowed' : 'pointer',
+                fontWeight: '500',
+                transition: 'background 0.15s',
+              }}
+            >
+              + New board
+            </button>
+            {isAtLimit && (
+              <div style={{
+                position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
+                background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.08)',
+                borderRadius: '8px', padding: '8px 12px',
+                fontSize: '12px', color: '#aaa', whiteSpace: 'nowrap',
+                pointerEvents: 'none', zIndex: 10,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+              }}>
+                <span style={{ color: '#7F77DD', fontWeight: '500' }}>Free plan</span> · 3 board limit reached
+                <div style={{ marginTop: '4px', color: '#555' }}>
+                  Upgrade to Pro for unlimited boards
+                </div>
+              </div>
+            )}
+          </div>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
