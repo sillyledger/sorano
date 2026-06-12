@@ -3,15 +3,7 @@ import { useEffect, useState } from 'react'
 import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 import SettingsModal from './SettingsModal'
-
-// ── Plan check — swap this out when Paddle is ready ──────────────────────────
-const FREE_BOARD_LIMIT = 3
-
-function getUserPlan() {
-  // TODO: read from profiles table once payments are live
-  return 'free'
-}
-// ─────────────────────────────────────────────────────────────────────────────
+import { getUserPlan, FREE_BOARD_LIMIT } from '../../lib/plan'
 
 export default function Dashboard() {
   const [boards, setBoards] = useState([])
@@ -198,7 +190,6 @@ export default function Dashboard() {
             <p style={{ fontSize: '13px', color: '#444' }}>Your public roadmaps</p>
           </div>
 
-          {/* New board button — disabled at free limit */}
           <div style={{ position: 'relative' }} className="new-board-wrap">
             <button
               onClick={handleNewBoard}
@@ -226,9 +217,7 @@ export default function Dashboard() {
                 boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
               }}>
                 <span style={{ color: '#7F77DD', fontWeight: '500' }}>Free plan</span> · 3 board limit reached
-                <div style={{ marginTop: '4px', color: '#555' }}>
-                  Upgrade to Pro for unlimited boards
-                </div>
+                <div style={{ marginTop: '4px', color: '#555' }}>Upgrade to Pro for unlimited boards</div>
               </div>
             )}
           </div>
