@@ -8,18 +8,24 @@ export default function Home() {
 
   const faqData = {
     'Pricing': [
-      { q: 'Is the free plan actually free forever?', a: 'Yes. No credit card required, no trial period. The free plan gives you 3 public boards with unlimited cards, a public roadmap, and a changelog. It stays free as long as Sorano exists.' },
-      { q: "What's the difference between Lifetime and Pro?", a: 'Both unlock the same features — unlimited boards, upvoting, custom labels, and branding removal. Lifetime is a one-time $60 payment covering all future features. Pro is $4/month or $30/year.' },
-      { q: 'Can I try it before paying?', a: "Yes — the free plan is permanent, not a trial. Build up to 3 boards and share them publicly. Upgrade anytime when you're ready for more." },
+      { q: 'Is the free plan actually free forever?', a: 'Yes, no credit card required and no expiry date. The free plan gives you up to 3 boards and full sharing. It stays free as long as Sorano exists.' },
+      { q: "What's the difference between Pro and Lifetime?", a: 'Pro is $4/month (or $30/year) — great if you want to pay as you go. Lifetime is a one-time $60 and you\'re covered forever, no future charges. Both unlock unlimited boards, voting, and any Pro features going forward.' },
+      { q: 'Can I try it before paying?', a: 'Absolutely. Sign up for free and start using Sorano right away — no trial period, no countdown. Upgrade whenever it makes sense for you.' },
+      { q: 'Do you offer refunds?', a: 'Yes, within 7 days of purchase, no questions asked. Just reach out.' },
+      { q: 'Will the price go up?', a: 'Possibly over time as more features ship. If you lock in Lifetime now, you\'re set regardless of what the price becomes later.' },
     ],
     'Features': [
-      { q: "What does 'voting disabled' on the free plan mean?", a: "On the free plan, users can see vote counts on your roadmap but can't cast new votes. Upgrading to Lifetime or Pro enables voting on all your boards." },
-      { q: 'Do my users need an account to vote?', a: 'No. Voting is fully anonymous — just click the upvote button. No login, no email, no friction. We use a browser token to prevent duplicate votes.' },
-      { q: 'What is the changelog?', a: "A public feed at sorano.space/your-slug/changelog showing everything you've marked as Shipped, ordered by date. You can add optional release notes to each entry." },
+      { q: "What can I do with a board?", a: "A board is a page where people can submit ideas, feedback, or requests — and vote on what matters most to them. You share the link, they show up." },
+      { q: 'Who can submit and vote?', a: 'Anyone with the link can submit ideas. Voting is available on Pro and Lifetime plans.' },
+      { q: 'Can I customize my board?', a: 'You can set a title, description, and a custom slug (e.g. sorano.space/yourproduct). More customization options are on the roadmap.' },
+      { q: 'Is there a limit on submissions or votes?', a: 'No limits on either. Collect as much feedback as your users want to give.' },
     ],
     'Boards': [
+      { q: 'How many boards can I have?', a: 'The free plan supports up to 3 boards. Pro and Lifetime give you unlimited boards.' },
+      { q: 'Can I have multiple boards for different products?', a: "Yes, that's exactly the use case. Each board has its own link and can be shared independently." },
+      { q: 'Can I delete a board?', a: 'Yes, from your dashboard. Deleting a board also removes all its submissions — so double-check before you do.' },
+      { q: 'Are boards public or private?', a: 'Boards are private by default — only people with your link can access them. There\'s no public index and your board won\'t show up anywhere unless you share the link yourself.' },
       { q: 'What happens to my boards if I cancel Pro?', a: 'Your boards stay live and accessible. If you have more than 3, they become read-only until you upgrade again or bring your count down to 3.' },
-      { q: 'Can I make a board private?', a: "Yes. Each board has a public/private toggle you can flip anytime. Private boards are only visible to you when logged in." },
     ],
   }
 
@@ -357,10 +363,10 @@ export default function Home() {
 
           <div style={{ maxWidth: '960px', margin: '40px auto 0', paddingTop: '24px', borderTop: '0.5px solid rgba(255,255,255,0.04)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
             <span style={{ fontSize: '12px', color: '#555' }}>© 2026 Sorano. All rights reserved.</span>
-<a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#555', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
+            <a href="mailto:sorano@ryoka.xyz" style={{ fontSize: '12px', color: '#555', textDecoration: 'none' }}>sorano@ryoka.xyz</a>
           </div>
         </div>
-</div>
+      </div>
     </div>
   )
 }
