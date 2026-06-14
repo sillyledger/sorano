@@ -78,6 +78,20 @@ html, body {
   border: 0.5px solid rgba(255,255,255,0.06);
   border-radius: 16px;
   padding: 28px;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.feat-cols {
+  display: flex;
+  gap: 6px;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  padding-bottom: 4px;
+}
+
+.feat-cols::-webkit-scrollbar {
+  display: none;
 }
 
 .feat-stats-grid {
@@ -91,12 +105,6 @@ html, body {
   flex-direction: column;
   gap: 10px;
   margin-top: 8px;
-}
-
-.feat-cols {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
 }
 
 .pricing-grid {
@@ -120,7 +128,12 @@ html, body {
   flex-direction: row;
   gap: 6px;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
   padding-bottom: 2px;
+}
+
+.faq-cats::-webkit-scrollbar {
+  display: none;
 }
 
 .faq-cat {
@@ -225,5 +238,73 @@ html, body {
 
   .feat-wide-3 {
     grid-column: span 3;
+  }
+}
+
+/* Public board */
+.board-grid {
+  display: flex;
+  flex-direction: column;
+}
+
+.board-col {
+  border-right: none;
+  border-bottom: 0.5px solid rgba(255,255,255,0.06);
+}
+
+.board-col:last-child {
+  border-bottom: none;
+}
+
+.board-col-cards {
+  overflow-y: visible;
+  flex: none;
+  padding: 8px 16px 16px;
+}
+
+.board-header-slug {
+  display: none;
+}
+
+.board-legend {
+  display: none;
+}
+
+.board-building-label {
+  display: none;
+}
+
+@media (min-width: 769px) {
+  .board-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    height: calc(100vh - 57px - 41px - 44px);
+  }
+
+  .board-col {
+    border-right: 0.5px solid rgba(255,255,255,0.06);
+    border-bottom: none;
+  }
+
+  .board-col:last-child {
+    border-right: none;
+  }
+
+  .board-col-cards {
+    overflow-y: auto;
+    flex: 1;
+    padding: 12px;
+  }
+
+  .board-header-slug {
+    display: inline;
+  }
+
+  .board-legend {
+    display: flex;
+  }
+
+  .board-building-label {
+    display: inline;
   }
 }
