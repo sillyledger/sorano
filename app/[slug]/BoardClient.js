@@ -19,6 +19,11 @@ function getVoterToken() {
   return token
 }
 
+function formatDate(iso) {
+  if (!iso) return ''
+  return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
+}
+
 export default function BoardClient({ params }) {
   const [board, setBoard] = useState(null)
   const [cards, setCards] = useState([])
@@ -132,31 +137,35 @@ export default function BoardClient({ params }) {
       </div>
 
       {/* Board */}
-      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', height: 'calc(100vh - 57px - 41px - 44px)' }}>
+      <div className="board-grid">
         {COLUMNS.map((col, colIdx) => {
           const colCards = cards.filter(c => c.status === col.key)
           return (
-            <div key={col.key} style={{ borderRight: colIdx < 3 ? '0.5px solid rgba(255,255,255,0.06)' : 'none', display: 'flex', flexDirection: 'column' }}>
+            <div key={col.key} className="board-col" style={{ display: 'flex', flexDirection: 'column' }}>
 
               {/* Col header */}
-              <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
+              <div style={{ padding: '14px 20px 12px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: col.color, display: 'inline-block' }}></span>
                 <span style={{ fontSize: '13px', fontWeight: '500', color: '#bbb' }}>{col.label}</span>
                 <span style={{ fontSize: '11px', color: '#555', marginLeft: '2px' }}>{colCards.length}</span>
               </div>
 
               {/* Cards */}
-              <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px', overflowY: 'auto', flex: 1 }}>
+              <div className="board-col-cards" style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
 
                 {col.key === 'shipped' && colCards.map(card => {
                   const tag = getTag(card.tag)
                   return (
-                    <div key={card.id} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
-                      <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
-                      <div>
-                        <div style={{ fontSize: '14px', color: '#999', marginBottom: '4px' }}>{card.title}</div>
-                        {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
+                    <div key={card.id} style={{ padding: '12px 14px', display: 'flex', flexDirection: 'column', gap: '6px', borderBottom: '0.5px solid rgba(255,255,255,0.04)' }}>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                          <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
+                          <div style={{ fontSize: '14px', color: '#f5f5fa', lineHeight: '1.3' }}>{card.title}</div>
+                        </div>
+                        {card.shipped_at && <span style={{ fontSize: '11px', color: '#666', flexShrink: 0 }}>{formatDate(card.shipped_at)}</span>}
                       </div>
+                      {card.shipped_note && <div style={{ fontSize: '13px', color: '#c0c0cc', lineHeight: '1.5', paddingLeft: '21px' }}>{card.shipped_note}</div>}
+                      {tag && <div style={{ paddingLeft: '21px' }}><span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span></div>}
                     </div>
                   )
                 })}
@@ -172,7 +181,11 @@ export default function BoardClient({ params }) {
                             <span style={{ fontSize: '13px', fontWeight: '500', color: '#666' }}>{voteCounts[card.id] || 0}</span>
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '14px', color: '#c0c0cc', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: card.shipped_note ? '6px' : '0' }}>
+                              <div style={{ fontSize: '14px', color: '#c0c0cc', lineHeight: '1.3' }}>{card.title}</div>
+                              {card.shipped_at && <span style={{ fontSize: '11px', color: '#666', flexShrink: 0 }}>{formatDate(card.shipped_at)}</span>}
+                            </div>
+                            {card.shipped_note && <div style={{ fontSize: '13px', color: '#c0c0cc', lineHeight: '1.5', marginBottom: '6px' }}>{card.shipped_note}</div>}
                             {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                           </div>
                         </div>
@@ -215,7 +228,11 @@ export default function BoardClient({ params }) {
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '14px', color: '#e8e8f0', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '8px', marginBottom: card.shipped_note ? '6px' : '6px' }}>
+                          <div style={{ fontSize: '14px', color: '#e8e8f0', lineHeight: '1.3' }}>{card.title}</div>
+                          {card.shipped_at && <span style={{ fontSize: '11px', color: '#666', flexShrink: 0 }}>{formatDate(card.shipped_at)}</span>}
+                        </div>
+                        {card.shipped_note && <div style={{ fontSize: '13px', color: '#c0c0cc', lineHeight: '1.5', marginBottom: '6px' }}>{card.shipped_note}</div>}
                         {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                       </div>
                     </div>
@@ -232,7 +249,7 @@ export default function BoardClient({ params }) {
       </div>
 
       {/* Legend */}
-      <div style={{ height: '44px', borderTop: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: '24px', padding: '0 28px' }}>
+      <div className="board-legend" style={{ height: '44px', borderTop: '0.5px solid rgba(255,255,255,0.06)', alignItems: 'center', justifyContent: 'flex-end', gap: '24px', padding: '0 28px' }}>
         {[
           { icon: '▪', color: '#7F77DD', label: 'Top voted' },
           { icon: '▲', color: '#7F77DD', label: 'You voted' },
