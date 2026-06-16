@@ -33,6 +33,8 @@ export default function BoardPage({ params }) {
   const [pickerShowCreate, setPickerShowCreate] = useState(false)
   const [editingNoteCardId, setEditingNoteCardId] = useState(null)
   const [noteValue, setNoteValue] = useState('')
+  const [editingDateCardId, setEditingDateCardId] = useState(null)
+  const [dateValue, setDateValue] = useState('')
   const [renameValue, setRenameValue] = useState('')
   const [newTagName, setNewTagName] = useState('')
   const [newTagColor, setNewTagColor] = useState('#7F77DD')
@@ -127,11 +129,14 @@ export default function BoardPage({ params }) {
   }
 
   async function moveCard(cardId, newStatus) {
+    const card = cards.find(c => c.id === cardId)
     const isShipping = newStatus === 'shipped'
-    const wasShipped = cards.find(c => c.id === cardId)?.status === 'shipped'
+    const wasShipped = card?.status === 'shipped'
     const updates = { status: newStatus }
-    if (isShipping && !wasShipped) updates.shipped_at = new Date().toISOString()
-    if (!isShipping && wasShipped) { updates.shipped_at = null; updates.shipped_note = null }
+    // Auto-set shipped_at only if moving TO shipped and no date already set
+    if (isShipping && !wasShipped && !card?.shipped_at) updates.shipped_at = new Date().toISOString()
+    // Clear note when moving away from shipped, but keep the date
+    if (!isShipping && wasShipped) updates.shipped_note = null
     await supabase.from('cards').update(updates).eq('id', cardId)
     setCards(cards.map(c => c.id === cardId ? { ...c, ...updates } : c))
   }
@@ -141,6 +146,14 @@ export default function BoardPage({ params }) {
     setCards(prev => prev.map(c => c.id === cardId ? { ...c, shipped_note: noteValue.trim() || null } : c))
     setEditingNoteCardId(null)
     setNoteValue('')
+  }
+
+  async function saveDate(cardId) {
+    const iso = dateValue ? new Date(dateValue + 'T12:00:00').toISOString() : null
+    await supabase.from('cards').update({ shipped_at: iso }).eq('id', cardId)
+    setCards(prev => prev.map(c => c.id === cardId ? { ...c, shipped_at: iso } : c))
+    setEditingDateCardId(null)
+    setDateValue('')
   }
 
   async function renameBoard() {
@@ -178,7 +191,7 @@ export default function BoardPage({ params }) {
 
   function formatDate(iso) {
     if (!iso) return ''
-    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })
+    return new Date(iso).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
   }
 
   if (loading) return <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
@@ -187,7 +200,7 @@ export default function BoardPage({ params }) {
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}
-      onClick={() => { setLabelPickerCardId(null); setPickerShowCreate(false) }}
+      onClick={() => { setLabelPickerCardId(null); setPickerShowCreate(false); setEditingDateCardId(null) }}
     >
 
       {/* Rename modal */}
@@ -333,15 +346,43 @@ export default function BoardPage({ params }) {
                 const tag = getTag(card.tag)
                 const pickerOpen = labelPickerCardId === card.id
                 const isEditingNote = editingNoteCardId === card.id
+                const isEditingDate = editingDateCardId === card.id
 
                 return (
                   <div key={card.id} style={{ background: '#22222c', borderRadius: '8px', padding: '10px 11px', position: 'relative', borderTop: '0.5px solid rgba(255,255,255,0.05)', borderRight: '0.5px solid rgba(255,255,255,0.05)', borderBottom: '0.5px solid rgba(255,255,255,0.05)', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.05)' }}>
+
+                    {/* Title row with date */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
-                      <div style={{ fontSize: '14px', fontWeight: '500', color: '#f5f5fa', lineHeight: '1.45' }}>{card.title}</div>
-                      <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#555', fontSize: '14px', padding: '0', lineHeight: 1, flexShrink: 0 }}>✕</button>
+                      <div style={{ fontSize: '14px', fontWeight: '500', color: '#f5f5fa', lineHeight: '1.45', flex: 1 }}>{card.title}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
+                        {/* Inline date editor */}
+                        {isEditingDate ? (
+                          <div onClick={e => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
+                            <input
+                              type="date"
+                              autoFocus
+                              value={dateValue}
+                              onChange={e => setDateValue(e.target.value)}
+                              onKeyDown={e => { if (e.key === 'Enter') saveDate(card.id); if (e.key === 'Escape') { setEditingDateCardId(null); setDateValue('') } }}
+                              style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: '5px', fontSize: '11px', color: '#c0c0cc', padding: '2px 5px', outline: 'none', colorScheme: 'dark', width: '120px' }}
+                            />
+                            <button onClick={() => saveDate(card.id)} style={{ fontSize: '11px', color: '#7F77DD', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>✓</button>
+                            <button onClick={() => { setEditingDateCardId(null); setDateValue('') }} style={{ fontSize: '11px', color: '#555', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>✕</button>
+                          </div>
+                        ) : (
+                          <span
+                            onClick={e => { e.stopPropagation(); setEditingDateCardId(card.id); setDateValue(card.shipped_at ? card.shipped_at.slice(0, 10) : '') }}
+                            style={{ fontSize: '11px', color: card.shipped_at ? '#888' : '#3a3a4a', cursor: 'pointer' }}
+                            title="Set date"
+                          >
+                            {card.shipped_at ? formatDate(card.shipped_at) : '+'}
+                          </span>
+                        )}
+                        <button onClick={() => deleteCard(card.id)} style={{ background: 'transparent', border: 'none', cursor: 'pointer', color: '#555', fontSize: '14px', padding: '0', lineHeight: 1 }}>✕</button>
+                      </div>
                     </div>
 
-                    {/* Shipped note */}
+                    {/* Shipped note (only in Shipped column) */}
                     {col.key === 'shipped' && (
                       <div style={{ marginBottom: '7px' }}>
                         {isEditingNote ? (
@@ -368,7 +409,6 @@ export default function BoardPage({ params }) {
                             )}
                           </div>
                         )}
-                        {card.shipped_at && <div style={{ fontSize: '11px', color: '#666', marginTop: '4px' }}>{formatDate(card.shipped_at)}</div>}
                       </div>
                     )}
 
