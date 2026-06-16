@@ -133,10 +133,7 @@ export default function BoardPage({ params }) {
     const isShipping = newStatus === 'shipped'
     const wasShipped = card?.status === 'shipped'
     const updates = { status: newStatus }
-    // Auto-set shipped_at only if moving TO shipped and no date already set
     if (isShipping && !wasShipped && !card?.shipped_at) updates.shipped_at = new Date().toISOString()
-    // Clear note when moving away from shipped, but keep the date
-    if (!isShipping && wasShipped) updates.shipped_note = null
     await supabase.from('cards').update(updates).eq('id', cardId)
     setCards(cards.map(c => c.id === cardId ? { ...c, ...updates } : c))
   }
@@ -351,11 +348,11 @@ export default function BoardPage({ params }) {
                 return (
                   <div key={card.id} style={{ background: '#22222c', borderRadius: '8px', padding: '10px 11px', position: 'relative', borderTop: '0.5px solid rgba(255,255,255,0.05)', borderRight: '0.5px solid rgba(255,255,255,0.05)', borderBottom: '0.5px solid rgba(255,255,255,0.05)', borderLeft: isTop ? '2px solid #7F77DD' : '0.5px solid rgba(255,255,255,0.05)' }}>
 
-                    {/* Title row with date */}
+                    {/* Title row */}
                     <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: '6px', marginBottom: '7px' }}>
                       <div style={{ fontSize: '14px', fontWeight: '500', color: '#f5f5fa', lineHeight: '1.45', flex: 1 }}>{card.title}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', flexShrink: 0 }}>
-                        {/* Inline date editor */}
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexShrink: 0 }}>
+                        {/* Date */}
                         {isEditingDate ? (
                           <div onClick={e => e.stopPropagation()} style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                             <input
@@ -367,12 +364,12 @@ export default function BoardPage({ params }) {
                               style={{ background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.12)', borderRadius: '5px', fontSize: '11px', color: '#c0c0cc', padding: '2px 5px', outline: 'none', colorScheme: 'dark', width: '120px' }}
                             />
                             <button onClick={() => saveDate(card.id)} style={{ fontSize: '11px', color: '#7F77DD', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>✓</button>
-                            <button onClick={() => { setEditingDateCardId(null); setDateValue('') }} style={{ fontSize: '11px', color: '#555', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>✕</button>
+                            <button onClick={() => { setEditingDateCardId(null); setDateValue('') }} style={{ fontSize: '11px', color: '#666', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>✕</button>
                           </div>
                         ) : (
                           <span
                             onClick={e => { e.stopPropagation(); setEditingDateCardId(card.id); setDateValue(card.shipped_at ? card.shipped_at.slice(0, 10) : '') }}
-                            style={{ fontSize: '11px', color: card.shipped_at ? '#888' : '#3a3a4a', cursor: 'pointer' }}
+                            style={{ fontSize: '11px', color: card.shipped_at ? '#888' : '#555', cursor: 'pointer', padding: '1px 4px', borderRadius: '4px' }}
                             title="Set date"
                           >
                             {card.shipped_at ? formatDate(card.shipped_at) : '+'}
@@ -382,36 +379,35 @@ export default function BoardPage({ params }) {
                       </div>
                     </div>
 
-                    {/* Shipped note (only in Shipped column) */}
-                    {col.key === 'shipped' && (
-                      <div style={{ marginBottom: '7px' }}>
-                        {isEditingNote ? (
-                          <div onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
-                            <textarea
-                              autoFocus
-                              value={noteValue}
-                              onChange={e => setNoteValue(e.target.value)}
-                              placeholder="Add a release note..."
-                              rows={2}
-                              style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '13px', color: '#c0c0cc', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
-                            />
-                            <div style={{ display: 'flex', gap: '6px' }}>
-                              <button onClick={() => saveNote(card.id)} style={{ fontSize: '12px', color: '#7F77DD', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Save</button>
-                              <button onClick={() => { setEditingNoteCardId(null); setNoteValue('') }} style={{ fontSize: '12px', color: '#666', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Cancel</button>
-                            </div>
+                    {/* Note — all columns */}
+                    <div style={{ marginBottom: '7px' }}>
+                      {isEditingNote ? (
+                        <div onClick={e => e.stopPropagation()} style={{ display: 'flex', flexDirection: 'column', gap: '5px' }}>
+                          <textarea
+                            autoFocus
+                            value={noteValue}
+                            onChange={e => setNoteValue(e.target.value)}
+                            placeholder={col.key === 'shipped' ? 'Add a release note...' : 'Add a note...'}
+                            rows={2}
+                            style={{ width: '100%', padding: '6px 8px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.1)', background: '#1c1c24', fontSize: '13px', color: '#c0c0cc', outline: 'none', resize: 'none', boxSizing: 'border-box', fontFamily: 'inherit' }}
+                          />
+                          <div style={{ display: 'flex', gap: '6px' }}>
+                            <button onClick={() => saveNote(card.id)} style={{ fontSize: '12px', color: '#7F77DD', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Save</button>
+                            <button onClick={() => { setEditingNoteCardId(null); setNoteValue('') }} style={{ fontSize: '12px', color: '#666', background: 'transparent', border: 'none', cursor: 'pointer', padding: 0 }}>Cancel</button>
                           </div>
-                        ) : (
-                          <div onClick={e => { e.stopPropagation(); setEditingNoteCardId(card.id); setNoteValue(card.shipped_note || '') }} style={{ cursor: 'pointer' }}>
-                            {card.shipped_note ? (
-                              <div style={{ fontSize: '13px', color: '#c0c0cc', lineHeight: '1.5' }}>{card.shipped_note}</div>
-                            ) : (
-                              <div style={{ fontSize: '13px', color: '#555', fontStyle: 'italic' }}>+ add release note</div>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                    )}
+                        </div>
+                      ) : (
+                        <div onClick={e => { e.stopPropagation(); setEditingNoteCardId(card.id); setNoteValue(card.shipped_note || '') }} style={{ cursor: 'pointer' }}>
+                          {card.shipped_note ? (
+                            <div style={{ fontSize: '13px', color: '#c0c0cc', lineHeight: '1.5' }}>{card.shipped_note}</div>
+                          ) : (
+                            <div style={{ fontSize: '12px', color: '#444', fontStyle: 'italic' }}>+ add note</div>
+                          )}
+                        </div>
+                      )}
+                    </div>
 
+                    {/* Bottom row: label + status + vote count */}
                     <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', justifyContent: 'space-between' }}>
                       <div style={{ display: 'flex', alignItems: 'center', gap: '5px', flexWrap: 'wrap', position: 'relative' }}>
                         <div onClick={e => { e.stopPropagation(); openPicker(pickerOpen ? null : card.id) }} style={{ cursor: 'pointer' }}>
