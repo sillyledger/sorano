@@ -92,17 +92,17 @@ export default function BoardClient({ params }) {
   }
 
   if (loading) return (
-    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
+    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontFamily: 'sans-serif', fontSize: '13px' }}>Loading...</div>
   )
 
   if (!board) return (
-    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#555', fontFamily: 'sans-serif', fontSize: '13px' }}>Board not found.</div>
+    <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#888', fontFamily: 'sans-serif', fontSize: '13px' }}>Board not found.</div>
   )
 
   if (!board.is_public) return (
     <div style={{ background: '#1c1c24', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontFamily: 'sans-serif', flexDirection: 'column', gap: '8px' }}>
-      <div style={{ fontSize: '13px', color: '#555' }}>This board is private.</div>
-      <div style={{ fontSize: '11px', color: '#333' }}>The owner hasn't made it public yet.</div>
+      <div style={{ fontSize: '13px', color: '#888' }}>This board is private.</div>
+      <div style={{ fontSize: '11px', color: '#666' }}>The owner hasn't made it public yet.</div>
     </div>
   )
 
@@ -116,10 +116,10 @@ export default function BoardClient({ params }) {
       <div style={{ padding: '20px 28px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
-          <span style={{ fontSize: '17px', fontWeight: '600', color: '#ddd' }}>{board.name}</span>
-          <span style={{ fontSize: '13px', color: '#3a3a44' }}>sorano.space/{board.slug}</span>
+          <span style={{ fontSize: '17px', fontWeight: '600', color: '#f5f5fa' }}>{board.name}</span>
+          <span style={{ fontSize: '13px', color: '#666' }}>sorano.space/{board.slug}</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#3a3a44' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#666' }}>
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1D9E75', display: 'inline-block' }}></span>
           actively building
         </div>
@@ -127,8 +127,8 @@ export default function BoardClient({ params }) {
 
       {/* Tab switcher */}
       <div style={{ padding: '0 28px', borderBottom: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', gap: '24px' }}>
-        <a href={`/${board.slug}`} style={{ padding: '12px 0', fontSize: '13px', color: '#ddd', textDecoration: 'none', borderBottom: '2px solid #7F77DD' }}>Roadmap</a>
-        <a href={`/${board.slug}/changelog`} style={{ padding: '12px 0', fontSize: '13px', color: '#555', textDecoration: 'none', borderBottom: '2px solid transparent' }}>Changelog</a>
+        <a href={`/${board.slug}`} style={{ padding: '12px 0', fontSize: '13px', color: '#f5f5fa', textDecoration: 'none', borderBottom: '2px solid #7F77DD' }}>Roadmap</a>
+        <a href={`/${board.slug}/changelog`} style={{ padding: '12px 0', fontSize: '13px', color: '#888', textDecoration: 'none', borderBottom: '2px solid transparent' }}>Changelog</a>
       </div>
 
       {/* Board */}
@@ -141,8 +141,8 @@ export default function BoardClient({ params }) {
               {/* Col header */}
               <div style={{ padding: '16px 20px', display: 'flex', alignItems: 'center', gap: '8px', borderBottom: '0.5px solid rgba(255,255,255,0.06)' }}>
                 <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: col.color, display: 'inline-block' }}></span>
-                <span style={{ fontSize: '13px', fontWeight: '500', color: '#888' }}>{col.label}</span>
-                <span style={{ fontSize: '11px', color: '#3a3a44', marginLeft: '2px' }}>{colCards.length}</span>
+                <span style={{ fontSize: '13px', fontWeight: '500', color: '#bbb' }}>{col.label}</span>
+                <span style={{ fontSize: '11px', color: '#555', marginLeft: '2px' }}>{colCards.length}</span>
               </div>
 
               {/* Cards */}
@@ -154,7 +154,7 @@ export default function BoardClient({ params }) {
                     <div key={card.id} style={{ padding: '12px 14px', display: 'flex', alignItems: 'center', gap: '10px' }}>
                       <span style={{ color: '#1D9E75', fontSize: '13px', flexShrink: 0 }}>✓</span>
                       <div>
-                        <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>{card.title}</div>
+                        <div style={{ fontSize: '14px', color: '#999', marginBottom: '4px' }}>{card.title}</div>
                         {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                       </div>
                     </div>
@@ -168,17 +168,17 @@ export default function BoardClient({ params }) {
                       return (
                         <div key={card.id} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.06)', borderRadius: '10px', padding: '14px', display: 'flex', gap: '12px', alignItems: 'flex-start' }}>
                           <div style={{ width: '44px', height: '44px', borderRadius: '8px', background: '#1c1c24', border: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '2px', flexShrink: 0 }}>
-                            <span style={{ fontSize: '11px', color: '#333' }}>▲</span>
-                            <span style={{ fontSize: '13px', fontWeight: '500', color: '#444' }}>{voteCounts[card.id] || 0}</span>
+                            <span style={{ fontSize: '11px', color: '#555' }}>▲</span>
+                            <span style={{ fontSize: '13px', fontWeight: '500', color: '#666' }}>{voteCounts[card.id] || 0}</span>
                           </div>
                           <div style={{ flex: 1, minWidth: 0 }}>
-                            <div style={{ fontSize: '14px', color: '#888', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                            <div style={{ fontSize: '14px', color: '#c0c0cc', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
                             {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                           </div>
                         </div>
                       )
                     })}
-                    {colCards.length > 0 && <div style={{ fontSize: '12px', color: '#2a2a32', padding: '8px 4px' }}>Voting disabled — in progress</div>}
+                    {colCards.length > 0 && <div style={{ fontSize: '12px', color: '#555', padding: '8px 4px' }}>Voting disabled — in progress</div>}
                   </>
                 )}
 
@@ -203,8 +203,8 @@ export default function BoardClient({ params }) {
                             flexShrink: 0,
                           }}
                         >
-                          <span style={{ fontSize: '11px', color: voted && votingEnabled ? '#7F77DD' : '#333' }}>▲</span>
-                          <span style={{ fontSize: '13px', fontWeight: '500', color: voted && votingEnabled ? '#7F77DD' : '#444' }}>{count}</span>
+                          <span style={{ fontSize: '11px', color: voted && votingEnabled ? '#7F77DD' : '#555' }}>▲</span>
+                          <span style={{ fontSize: '13px', fontWeight: '500', color: voted && votingEnabled ? '#7F77DD' : '#666' }}>{count}</span>
                         </button>
                         {tooltip === card.id && (
                           <div style={{ position: 'absolute', bottom: '110%', left: '50%', transform: 'translateX(-50%)', background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '6px', padding: '5px 10px', fontSize: '11px', color: '#aaa', whiteSpace: 'nowrap', zIndex: 10 }}>
@@ -215,7 +215,7 @@ export default function BoardClient({ params }) {
                         )}
                       </div>
                       <div style={{ flex: 1, minWidth: 0 }}>
-                        <div style={{ fontSize: '14px', color: '#ccc', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
+                        <div style={{ fontSize: '14px', color: '#e8e8f0', marginBottom: '6px', lineHeight: '1.3' }}>{card.title}</div>
                         {tag && <span style={{ fontSize: '11px', padding: '2px 8px', borderRadius: '99px', background: tag.color + '22', color: tag.color }}>{tag.name}</span>}
                       </div>
                     </div>
@@ -223,7 +223,7 @@ export default function BoardClient({ params }) {
                 })}
 
                 {colCards.length === 0 && col.key !== 'in-progress' && col.key !== 'in-review' && (
-                  <div style={{ fontSize: '12px', color: '#2a2a32', padding: '8px 4px' }}>Nothing here yet</div>
+                  <div style={{ fontSize: '12px', color: '#444', padding: '8px 4px' }}>Nothing here yet</div>
                 )}
               </div>
             </div>
@@ -236,10 +236,10 @@ export default function BoardClient({ params }) {
         {[
           { icon: '▪', color: '#7F77DD', label: 'Top voted' },
           { icon: '▲', color: '#7F77DD', label: 'You voted' },
-          { icon: '▲', color: '#333', label: 'Voting locked' },
+          { icon: '▲', color: '#555', label: 'Voting locked' },
           { icon: '✓', color: '#1D9E75', label: 'Shipped' },
         ].map(({ icon, color, label }) => (
-          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#3a3a44' }}>
+          <div key={label} style={{ display: 'flex', alignItems: 'center', gap: '5px', fontSize: '12px', color: '#666' }}>
             <span style={{ color }}>{icon}</span> {label}
           </div>
         ))}
