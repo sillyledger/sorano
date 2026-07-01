@@ -112,7 +112,7 @@ export default function Dashboard() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif' }}>
+    <div style={{ display: 'flex', height: '100vh', background: '#1c1c24', fontFamily: '-apple-system, BlinkMacSystemFont, sans-serif', overflow: 'hidden' }}>
 
       {showSettings && (
         <SettingsModal user={user} onClose={() => setShowSettings(false)} />
@@ -152,7 +152,7 @@ export default function Dashboard() {
         </div>
       )}
 
-      <div style={{ width: '190px', flexShrink: 0, borderRight: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 0' }}>
+      <div style={{ width: '190px', flexShrink: 0, borderRight: '0.5px solid rgba(255,255,255,0.06)', display: 'flex', flexDirection: 'column', padding: '20px 0', height: '100vh', overflowY: 'auto' }}>
         <div style={{ padding: '0 16px 20px', display: 'flex', alignItems: 'center', gap: '10px' }}>
           <div style={{ width: '32px', height: '32px', borderRadius: '8px', background: '#2e2e3a', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
@@ -183,102 +183,104 @@ export default function Dashboard() {
         </div>
       </div>
 
-      <div style={{ flex: 1, padding: '40px', maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
-          <div>
-            <h1 style={{ fontSize: '20px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
-            <p style={{ fontSize: '13px', color: '#444' }}>Your public roadmaps</p>
-          </div>
-
-          <div style={{ position: 'relative' }} className="new-board-wrap">
-            <button
-              onClick={handleNewBoard}
-              disabled={isAtLimit}
-              title={isAtLimit ? 'Upgrade to Pro to add more boards' : ''}
-              style={{
-                padding: '8px 18px', borderRadius: '8px', border: 'none',
-                background: isAtLimit ? '#2a2a34' : '#fff',
-                fontSize: '14px',
-                color: isAtLimit ? '#444' : '#1c1c24',
-                cursor: isAtLimit ? 'not-allowed' : 'pointer',
-                fontWeight: '500',
-                transition: 'background 0.15s',
-              }}
-            >
-              + New board
-            </button>
-            {isAtLimit && (
-              <div style={{
-                position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
-                background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.08)',
-                borderRadius: '8px', padding: '8px 12px',
-                fontSize: '12px', color: '#aaa', whiteSpace: 'nowrap',
-                pointerEvents: 'none', zIndex: 10,
-                boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
-              }}>
-                <span style={{ color: '#7F77DD', fontWeight: '500' }}>Free plan</span> · 3 board limit reached
-                <div style={{ marginTop: '4px', color: '#555' }}>Upgrade to Pro for unlimited boards</div>
-              </div>
-            )}
-          </div>
-        </div>
-
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
-          {statItems.map(s => (
-            <div key={s.key} style={{ background: '#22222c', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
-                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.color, display: 'inline-block' }}></span>
-                <span style={{ fontSize: '12px', color: '#888' }}>{s.label}</span>
-              </div>
-              <div style={{ fontSize: '32px', fontWeight: '500', color: '#bbb', lineHeight: 1 }}>{stats[s.key]}</div>
+      <div style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '40px', boxSizing: 'border-box' }}>
+        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+            <div>
+              <h1 style={{ fontSize: '20px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>All boards</h1>
+              <p style={{ fontSize: '13px', color: '#444' }}>Your public roadmaps</p>
             </div>
-          ))}
-        </div>
 
-        {loading ? (
-          <p style={{ color: '#444', fontSize: '14px' }}>Loading...</p>
-        ) : boards.length === 0 ? (
-          <p style={{ color: '#444', fontSize: '14px' }}>No boards yet. Create your first one.</p>
-        ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '32px' }}>
-            {boards.map((board, i) => (
-              <div key={board.id} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', position: 'relative' }}>
-                <div onClick={() => router.push(`/board/${board.slug}`)} style={{ cursor: 'pointer' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
-                    <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: COLORS[i % 6], display: 'inline-block' }}></span>
-                    <span style={{ fontSize: '14px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
-                  </div>
-                  <div style={{ fontSize: '12px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
+            <div style={{ position: 'relative' }} className="new-board-wrap">
+              <button
+                onClick={handleNewBoard}
+                disabled={isAtLimit}
+                title={isAtLimit ? 'Upgrade to Pro to add more boards' : ''}
+                style={{
+                  padding: '8px 18px', borderRadius: '8px', border: 'none',
+                  background: isAtLimit ? '#2a2a34' : '#fff',
+                  fontSize: '14px',
+                  color: isAtLimit ? '#444' : '#1c1c24',
+                  cursor: isAtLimit ? 'not-allowed' : 'pointer',
+                  fontWeight: '500',
+                  transition: 'background 0.15s',
+                }}
+              >
+                + New board
+              </button>
+              {isAtLimit && (
+                <div style={{
+                  position: 'absolute', bottom: 'calc(100% + 8px)', right: 0,
+                  background: '#2e2e3a', border: '0.5px solid rgba(255,255,255,0.08)',
+                  borderRadius: '8px', padding: '8px 12px',
+                  fontSize: '12px', color: '#aaa', whiteSpace: 'nowrap',
+                  pointerEvents: 'none', zIndex: 10,
+                  boxShadow: '0 4px 16px rgba(0,0,0,0.4)',
+                }}>
+                  <span style={{ color: '#7F77DD', fontWeight: '500' }}>Free plan</span> · 3 board limit reached
+                  <div style={{ marginTop: '4px', color: '#555' }}>Upgrade to Pro for unlimited boards</div>
                 </div>
-                <div
-                  onClick={e => { e.stopPropagation(); setBoardToDelete(board); setShowDeleteConfirm(true) }}
-                  style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '16px', color: '#2e2e38', cursor: 'pointer', lineHeight: 1, padding: '2px 6px', borderRadius: '4px' }}
-                >···</div>
+              )}
+            </div>
+          </div>
+
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr 1fr', gap: '8px', marginBottom: '24px' }}>
+            {statItems.map(s => (
+              <div key={s.key} style={{ background: '#22222c', borderRadius: '10px', padding: '16px', border: '0.5px solid rgba(255,255,255,0.06)' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '5px', marginBottom: '10px' }}>
+                  <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: s.color, display: 'inline-block' }}></span>
+                  <span style={{ fontSize: '12px', color: '#888' }}>{s.label}</span>
+                </div>
+                <div style={{ fontSize: '32px', fontWeight: '500', color: '#bbb', lineHeight: 1 }}>{stats[s.key]}</div>
               </div>
             ))}
           </div>
-        )}
 
-        {recentCards.length > 0 && (
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
-              <span style={{ fontSize: '13px', fontWeight: '500', color: '#888' }}>Recent activity</span>
-            </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-              {recentCards.map(card => {
-                const t = tagStyles[card.status] || tagStyles['planned']
-                return (
-                  <div key={card.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '8px', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)' }}>
-                    <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '99px', fontWeight: '500', background: t.bg, color: t.color, flexShrink: 0 }}>{t.label}</span>
-                    <span style={{ fontSize: '13px', color: '#aaa', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.title}</span>
-                    <span style={{ fontSize: '12px', color: '#3a3a44', flexShrink: 0 }}>{card.boardName}</span>
-                    <span style={{ fontSize: '12px', color: '#2e2e38', flexShrink: 0, minWidth: '40px', textAlign: 'right' }}>{formatDate(card.created_at)}</span>
+          {loading ? (
+            <p style={{ color: '#444', fontSize: '14px' }}>Loading...</p>
+          ) : boards.length === 0 ? (
+            <p style={{ color: '#444', fontSize: '14px' }}>No boards yet. Create your first one.</p>
+          ) : (
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(200px, 1fr))', gap: '8px', marginBottom: '32px' }}>
+              {boards.map((board, i) => (
+                <div key={board.id} style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', position: 'relative' }}>
+                  <div onClick={() => router.push(`/board/${board.slug}`)} style={{ cursor: 'pointer' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '6px' }}>
+                      <span style={{ width: '7px', height: '7px', borderRadius: '50%', background: COLORS[i % 6], display: 'inline-block' }}></span>
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#bbb' }}>{board.name}</span>
+                    </div>
+                    <div style={{ fontSize: '12px', color: '#3a3a44' }}>sorano.space/{board.slug}</div>
                   </div>
-                )
-              })}
+                  <div
+                    onClick={e => { e.stopPropagation(); setBoardToDelete(board); setShowDeleteConfirm(true) }}
+                    style={{ position: 'absolute', top: '10px', right: '10px', fontSize: '16px', color: '#2e2e38', cursor: 'pointer', lineHeight: 1, padding: '2px 6px', borderRadius: '4px' }}
+                  >···</div>
+                </div>
+              ))}
             </div>
-          </div>
-        )}
+          )}
+
+          {recentCards.length > 0 && (
+            <div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '12px' }}>
+                <span style={{ fontSize: '13px', fontWeight: '500', color: '#888' }}>Recent activity</span>
+              </div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+                {recentCards.map(card => {
+                  const t = tagStyles[card.status] || tagStyles['planned']
+                  return (
+                    <div key={card.id} style={{ display: 'flex', alignItems: 'center', gap: '12px', padding: '12px 14px', borderRadius: '8px', background: '#22222c', border: '0.5px solid rgba(255,255,255,0.05)' }}>
+                      <span style={{ fontSize: '11px', padding: '3px 8px', borderRadius: '99px', fontWeight: '500', background: t.bg, color: t.color, flexShrink: 0 }}>{t.label}</span>
+                      <span style={{ fontSize: '13px', color: '#aaa', flex: 1, minWidth: 0, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{card.title}</span>
+                      <span style={{ fontSize: '12px', color: '#3a3a44', flexShrink: 0 }}>{card.boardName}</span>
+                      <span style={{ fontSize: '12px', color: '#2e2e38', flexShrink: 0, minWidth: '40px', textAlign: 'right' }}>{formatDate(card.created_at)}</span>
+                    </div>
+                  )
+                })}
+              </div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )
