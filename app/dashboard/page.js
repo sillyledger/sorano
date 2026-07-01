@@ -54,7 +54,7 @@ export default function Dashboard() {
 
   async function createBoard() {
     if (!newBoard.trim() || !user) return
-    if (getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT) return
+    if (getUserPlan(user?.email) === 'free' && boards.length >= FREE_BOARD_LIMIT) return
     const slug = newBoard.toLowerCase().replace(/\s+/g, '-')
     await supabase.from('boards').insert({ name: newBoard, slug, owner_id: user.id })
     setNewBoard('')
@@ -76,11 +76,11 @@ export default function Dashboard() {
   }
 
   function handleNewBoard() {
-    if (getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT) return
+    if (getUserPlan(user?.email) === 'free' && boards.length >= FREE_BOARD_LIMIT) return
     setShowModal(true)
   }
 
-  const isAtLimit = getUserPlan() === 'free' && boards.length >= FREE_BOARD_LIMIT
+  const isAtLimit = getUserPlan(user?.email) === 'free' && boards.length >= FREE_BOARD_LIMIT
 
   const statItems = [
     { label: 'Planned', key: 'planned', color: '#444' },
