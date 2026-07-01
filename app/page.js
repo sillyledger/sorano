@@ -50,6 +50,7 @@ export default function Home() {
           <div className="lp-nav-links">
             <a href="#features" style={{ fontSize: '14px', color: '#aaa', textDecoration: 'none' }}>Features</a>
             <a href="#pricing" style={{ fontSize: '14px', color: '#aaa', textDecoration: 'none' }}>Pricing</a>
+            <a href="https://sorano.space/sorano" style={{ fontSize: '14px', color: '#aaa', textDecoration: 'none' }}>Our Roadmap</a>
           </div>
           <a href="https://app.sorano.space/login" style={{ padding: '9px 20px', borderRadius: '8px', background: '#fff', fontSize: '14px', color: '#1c1c24', textDecoration: 'none', fontWeight: '500', whiteSpace: 'nowrap' }}>Sign in</a>
         </nav>
@@ -320,6 +321,7 @@ export default function Home() {
                 <a href="#features" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Features</a>
                 <a href="#pricing" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Pricing</a>
                 <a href="https://sorano.space/example" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Example board</a>
+                <a href="https://sorano.space/sorano" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>Our Roadmap</a>
                 <a href="#faq" style={{ fontSize: '13px', color: '#555', textDecoration: 'none' }}>FAQ</a>
               </div>
             </div>
