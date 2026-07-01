@@ -60,11 +60,11 @@ export default function ChangelogPage({ params }) {
         <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
           <span style={{ width: '8px', height: '8px', borderRadius: '50%', background: '#7F77DD', display: 'inline-block' }}></span>
           <span style={{ fontSize: '17px', fontWeight: '600', color: '#f5f5fa' }}>{board.name}</span>
-          <span style={{ fontSize: '13px', color: '#666' }}>sorano.space/{board.slug}</span>
+          <span className="board-header-slug" style={{ fontSize: '13px', color: '#666' }}>sorano.space/{board.slug}</span>
         </div>
         <div style={{ display: 'flex', alignItems: 'center', gap: '6px', fontSize: '13px', color: '#666' }}>
           <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#1D9E75', display: 'inline-block' }}></span>
-          actively building
+          <span className="board-building-label">actively building</span>
         </div>
       </div>
 
