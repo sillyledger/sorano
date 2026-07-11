@@ -164,6 +164,16 @@ export default function Dashboard() {
           <span style={{ fontSize: '14px', fontWeight: '500', color: '#ccc' }}>sorano</span>
         </div>
         <div style={{ padding: '7px 16px', fontSize: '14px', color: '#bbb', display: 'flex', alignItems: 'center', gap: '8px' }}>⊞ All boards</div>
+        <div
+          onClick={() => router.push('/notes')}
+          style={{ padding: '7px 16px', fontSize: '14px', color: '#bbb', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}
+        >
+          <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+            <rect x="2" y="1.5" width="10" height="11" rx="1.5" stroke="currentColor" strokeWidth="1.1"/>
+            <path d="M4.5 5h5M4.5 7.5h5M4.5 10h3" stroke="currentColor" strokeWidth="1.1" strokeLinecap="round"/>
+          </svg>
+          Notes
+        </div>
         <div style={{ padding: '16px 16px 6px', fontSize: '11px', color: '#3a3a44', letterSpacing: '.06em' }}>TRACK</div>
         {boards.map((b, i) => (
           <div key={b.id} onClick={() => router.push(`/board/${b.slug}`)} style={{ padding: '6px 16px', fontSize: '14px', color: '#555', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '8px' }}>
