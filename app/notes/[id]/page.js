@@ -168,7 +168,7 @@ export default function NoteEditor() {
         .note-body h3 { font-size: 15px; font-weight: 500; color: #d0d0d6; margin: 14px 0 6px; }
         .note-body ul, .note-body ol { padding-left: 22px; margin: 8px 0; }
         .note-body p { margin: 0 0 8px; }
-        .note-body:empty:before { content: attr(data-placeholder); color: #444; }
+        .note-body:empty:before { content: attr(data-placeholder); color: #666; }
       `}</style>
 
       {showSettings && (
@@ -236,10 +236,10 @@ export default function NoteEditor() {
         <div style={{ maxWidth: '720px', margin: '0 auto', width: '100%' }}>
 
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '18px' }}>
-            <span onClick={() => router.push('/notes')} style={{ fontSize: '13px', color: '#555', cursor: 'pointer' }}>← Notes</span>
+            <span onClick={() => router.push('/notes')} style={{ fontSize: '13px', color: '#888', cursor: 'pointer' }}>← Notes</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
-              <span style={{ fontSize: '12px', color: '#444' }}>{saveStatus === 'saving' ? 'Saving...' : 'Saved'}</span>
-              <span onClick={() => setShowDeleteConfirm(true)} style={{ fontSize: '13px', color: '#555', cursor: 'pointer' }}>Delete</span>
+              <span style={{ fontSize: '12px', color: '#888' }}>{saveStatus === 'saving' ? 'Saving...' : 'Saved'}</span>
+              <span onClick={() => setShowDeleteConfirm(true)} style={{ fontSize: '13px', color: '#888', cursor: 'pointer' }}>Delete</span>
             </div>
           </div>
 
