@@ -14,6 +14,11 @@ const nextConfig = {
         destination: '/board/:path*',
       },
       {
+        source: '/notes/:path*',
+        has: [{ type: 'host', value: 'app.sorano.space' }],
+        destination: '/notes/:path*',
+      },
+      {
         source: '/:path*',
         has: [{ type: 'host', value: 'app.sorano.space' }],
         destination: '/dashboard/:path*',
@@ -21,5 +26,4 @@ const nextConfig = {
     ]
   },
 }
-
 module.exports = nextConfig
