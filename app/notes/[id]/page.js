@@ -12,6 +12,10 @@ function tagColor(tag) {
   return TAG_COLORS[sum % TAG_COLORS.length]
 }
 
+function stripHtml(html) {
+  return (html || '').replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim()
+}
+
 const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30']
 
 export default function NoteEditor() {
@@ -22,6 +26,11 @@ export default function NoteEditor() {
   const [user, setUser] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [showConvertModal, setShowConvertModal] = useState(false)
+  const [convertBoardId, setConvertBoardId] = useState('')
+  const [converting, setConverting] = useState(false)
+  const [convertedCardId, setConvertedCardId] = useState(null)
+  const [convertedBoardSlug, setConvertedBoardSlug] = useState(null)
 
   const [title, setTitle] = useState('')
   const [tags, setTags] = useState([])
@@ -63,6 +72,15 @@ export default function NoteEditor() {
     setTitle(noteData.title || '')
     setTags(noteData.tags || [])
     setBoardId(noteData.board_id || '')
+    setConvertedCardId(noteData.converted_card_id || null)
+    if (noteData.converted_card_id) fetchConvertedBoard(noteData.converted_card_id)
+  }
+
+  async function fetchConvertedBoard(cardId) {
+    const { data: cardData } = await supabase.from('cards').select('board_id').eq('id', cardId).single()
+    if (!cardData) return
+    const { data: boardData } = await supabase.from('boards').select('slug').eq('id', cardData.board_id).single()
+    if (boardData) setConvertedBoardSlug(boardData.slug)
   }
 
   useEffect(() => {
@@ -125,6 +143,25 @@ export default function NoteEditor() {
     handleBodyInput()
   }
 
+  async function convertToCard() {
+    if (!convertBoardId) return
+    setConverting(true)
+    const { data } = await supabase.from('cards').insert({
+      board_id: convertBoardId,
+      title: title.trim() || 'Untitled',
+      status: 'planned',
+      shipped_note: stripHtml(bodyRef.current) || null,
+    }).select().single()
+    setConverting(false)
+    if (data) {
+      await supabase.from('notes').update({ converted_card_id: data.id }).eq('id', noteId)
+      setConvertedCardId(data.id)
+      const targetBoard = boards.find(b => b.id === convertBoardId)
+      if (targetBoard) setConvertedBoardSlug(targetBoard.slug)
+      setShowConvertModal(false)
+    }
+  }
+
   async function deleteNote() {
     await supabase.from('notes').delete().eq('id', noteId)
     router.push('/notes')
@@ -165,6 +202,33 @@ export default function NoteEditor() {
 
       {showSettings && (
         <SettingsModal user={user} onClose={() => setShowSettings(false)} />
+      )}
+
+      {showConvertModal && (
+        <div onClick={() => setShowConvertModal(false)} style={{ position: 'fixed', inset: 0, background: 'rgba(0,0,0,0.6)', display: 'flex', alignItems: 'center', justifyContent: 'center', zIndex: 50 }}>
+          <div onClick={e => e.stopPropagation()} style={{ background: '#22222c', border: '0.5px solid rgba(255,255,255,0.1)', borderRadius: '12px', padding: '24px', width: '360px' }}>
+            <div style={{ fontSize: '15px', fontWeight: '500', color: '#f5f5fa', marginBottom: '6px' }}>Convert to card</div>
+            <div style={{ fontSize: '13px', color: '#888', marginBottom: '16px' }}>Creates a new card in Planned using this note's title and body. The note itself stays as-is, just marked converted.</div>
+            <select
+              value={convertBoardId}
+              onChange={e => setConvertBoardId(e.target.value)}
+              style={{ width: '100%', padding: '9px 12px', borderRadius: '8px', border: '0.5px solid rgba(255,255,255,0.08)', background: '#1c1c24', fontSize: '14px', color: '#ccc', outline: 'none', boxSizing: 'border-box', marginBottom: '20px' }}
+            >
+              <option value="">Choose a board...</option>
+              {boards.map(b => (
+                <option key={b.id} value={b.id}>{b.name}</option>
+              ))}
+            </select>
+            <div style={{ display: 'flex', gap: '8px', justifyContent: 'flex-end' }}>
+              <button onClick={() => setShowConvertModal(false)} style={{ padding: '8px 16px', borderRadius: '8px', border: 'none', background: 'transparent', fontSize: '13px', color: '#444', cursor: 'pointer' }}>Cancel</button>
+              <button
+                onClick={convertToCard}
+                disabled={!convertBoardId || converting}
+                style={{ padding: '8px 18px', borderRadius: '8px', border: 'none', background: convertBoardId ? '#7F77DD' : '#2e2e38', fontSize: '13px', color: '#fff', cursor: convertBoardId ? 'pointer' : 'not-allowed', fontWeight: '500' }}
+              >{converting ? 'Converting...' : 'Convert'}</button>
+            </div>
+          </div>
+        </div>
       )}
 
       {showDeleteConfirm && (
@@ -231,6 +295,14 @@ export default function NoteEditor() {
             <span onClick={() => router.push('/notes')} style={{ fontSize: '13px', color: '#888', cursor: 'pointer' }}>← Notes</span>
             <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
               <span style={{ fontSize: '12px', color: '#888' }}>{saveStatus === 'saving' ? 'Saving...' : 'Saved'}</span>
+              {convertedCardId ? (
+                <span
+                  onClick={() => convertedBoardSlug && router.push(`/board/${convertedBoardSlug}`)}
+                  style={{ fontSize: '12px', color: '#5DCAA5', cursor: convertedBoardSlug ? 'pointer' : 'default' }}
+                >✓ Converted to card</span>
+              ) : (
+                <span onClick={() => { setConvertBoardId(boardId || ''); setShowConvertModal(true) }} style={{ fontSize: '13px', color: '#888', cursor: 'pointer' }}>Convert to card</span>
+              )}
               <span onClick={() => setShowDeleteConfirm(true)} style={{ fontSize: '13px', color: '#888', cursor: 'pointer' }}>Delete</span>
             </div>
           </div>
