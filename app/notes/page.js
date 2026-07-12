@@ -218,7 +218,12 @@ export default function Notes() {
                     )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
                       <span style={{ fontSize: '14px', fontWeight: '500', color: '#f5f5fa' }}>{note.title || 'Untitled'}</span>
-                      <span style={{ fontSize: '10.5px', color: '#888', flexShrink: 0, marginLeft: '8px' }}>{formatRelative(note.updated_at)}</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '7px', flexShrink: 0, marginLeft: '8px' }}>
+                        {note.converted_card_id && (
+                          <span style={{ fontSize: '10px', color: '#5DCAA5', whiteSpace: 'nowrap' }}>✓ Converted</span>
+                        )}
+                        <span style={{ fontSize: '10.5px', color: '#888' }}>{formatRelative(note.updated_at)}</span>
+                      </div>
                     </div>
                     <p style={{ fontSize: '12px', color: '#c0c0cc', lineHeight: 1.5, margin: '0 0 12px', minHeight: '18px' }}>
                       {stripHtml(note.body) || 'No content yet'}
