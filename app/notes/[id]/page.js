@@ -4,20 +4,12 @@ import { supabase } from '../../../lib/supabase'
 import { useRouter, useParams } from 'next/navigation'
 import SettingsModal from '../../dashboard/SettingsModal'
 
-const TAG_PALETTE = [
-  { bg: 'rgba(127,119,221,0.15)', color: '#AFA9EC' },
-  { bg: 'rgba(239,159,39,0.15)', color: '#EF9F27' },
-  { bg: 'rgba(226,75,74,0.15)', color: '#F09595' },
-  { bg: 'rgba(29,158,117,0.15)', color: '#5DCAA5' },
-  { bg: 'rgba(55,138,221,0.15)', color: '#85B7EB' },
-  { bg: 'rgba(212,83,126,0.15)', color: '#ED93B1' },
-  { bg: 'rgba(100,100,120,0.25)', color: '#B4B2A9' },
-]
+const TAG_COLORS = ['#7F77DD', '#EF9F27', '#E24B4A', '#1D9E75', '#378ADD', '#D4537E', '#888']
 
-function tagStyle(tag) {
+function tagColor(tag) {
   let sum = 0
   for (let i = 0; i < tag.length; i++) sum += tag.charCodeAt(i)
-  return TAG_PALETTE[sum % TAG_PALETTE.length]
+  return TAG_COLORS[sum % TAG_COLORS.length]
 }
 
 const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30']
@@ -262,14 +254,13 @@ export default function NoteEditor() {
               ))}
             </select>
 
-            {tags.map(tag => {
-              const s = tagStyle(tag)
-              return (
-                <span key={tag} onClick={() => removeTag(tag)} style={{ fontSize: '11px', padding: '4px 9px', borderRadius: '99px', background: s.bg, color: s.color, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '5px' }}>
-                  {tag} <span style={{ opacity: 0.6 }}>×</span>
-                </span>
-              )
-            })}
+            {tags.map(tag => (
+              <span key={tag} onClick={() => removeTag(tag)} style={{ fontSize: '12px', padding: '5px 10px', borderRadius: '99px', border: '0.5px solid #2e2e38', color: '#d0d0d6', cursor: 'pointer', display: 'flex', alignItems: 'center', gap: '6px' }}>
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: tagColor(tag), flexShrink: 0 }} />
+                {tag}
+                <span style={{ opacity: 0.5 }}>×</span>
+              </span>
+            ))}
             <input
               value={tagInput}
               onChange={e => setTagInput(e.target.value)}
