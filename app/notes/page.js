@@ -4,20 +4,12 @@ import { supabase } from '../../lib/supabase'
 import { useRouter } from 'next/navigation'
 import SettingsModal from '../dashboard/SettingsModal'
 
-const TAG_PALETTE = [
-  { bg: 'rgba(127,119,221,0.15)', color: '#AFA9EC' },
-  { bg: 'rgba(239,159,39,0.15)', color: '#EF9F27' },
-  { bg: 'rgba(226,75,74,0.15)', color: '#F09595' },
-  { bg: 'rgba(29,158,117,0.15)', color: '#5DCAA5' },
-  { bg: 'rgba(55,138,221,0.15)', color: '#85B7EB' },
-  { bg: 'rgba(212,83,126,0.15)', color: '#ED93B1' },
-  { bg: 'rgba(100,100,120,0.25)', color: '#B4B2A9' },
-]
+const TAG_COLORS = ['#7F77DD', '#EF9F27', '#E24B4A', '#1D9E75', '#378ADD', '#D4537E', '#888']
 
-function tagStyle(tag) {
+function tagColor(tag) {
   let sum = 0
   for (let i = 0; i < tag.length; i++) sum += tag.charCodeAt(i)
-  return TAG_PALETTE[sum % TAG_PALETTE.length]
+  return TAG_COLORS[sum % TAG_COLORS.length]
 }
 
 function stripHtml(html) {
@@ -36,6 +28,7 @@ function formatRelative(dateStr) {
 }
 
 const COLORS = ['#7F77DD','#1D9E75','#EF9F27','#D4537E','#378ADD','#D85A30']
+const LIGHT_COLORS = ['#AFA9EC','#5DCAA5','#F5C979','#ED93B1','#85B7EB','#F0A588']
 
 export default function Notes() {
   const [notes, setNotes] = useState([])
@@ -45,6 +38,7 @@ export default function Notes() {
   const [user, setUser] = useState(null)
   const [showSettings, setShowSettings] = useState(false)
   const [search, setSearch] = useState('')
+  const [boardFilter, setBoardFilter] = useState('all')
   const router = useRouter()
 
   useEffect(() => { checkUser() }, [])
@@ -79,15 +73,23 @@ export default function Notes() {
     router.push('/login')
   }
 
+  function boardName(boardId) {
+    return boards.find(b => b.id === boardId)?.name
+  }
+
+  function boardStyle(boardId) {
+    const idx = boards.findIndex(b => b.id === boardId)
+    if (idx === -1) return { dot: '#555', text: '#999' }
+    return { dot: COLORS[idx % 6], text: LIGHT_COLORS[idx % 6] }
+  }
+
   const filteredNotes = notes.filter(n => {
+    if (boardFilter === 'none' && n.board_id) return false
+    if (boardFilter !== 'all' && boardFilter !== 'none' && n.board_id !== boardFilter) return false
     if (!search.trim()) return true
     const q = search.toLowerCase()
     return n.title.toLowerCase().includes(q) || stripHtml(n.body).toLowerCase().includes(q)
   })
-
-  function boardName(boardId) {
-    return boards.find(b => b.id === boardId)?.name
-  }
 
   if (!authChecked) {
     return (
@@ -148,11 +150,11 @@ export default function Notes() {
       </div>
 
       <div style={{ flex: 1, height: '100vh', overflowY: 'auto', padding: '40px', boxSizing: 'border-box' }}>
-        <div style={{ maxWidth: '800px', margin: '0 auto', width: '100%' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '24px' }}>
+        <div style={{ maxWidth: '820px', margin: '0 auto', width: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between', marginBottom: '18px' }}>
             <div>
               <h1 style={{ fontSize: '20px', fontWeight: '500', color: '#ccc', marginBottom: '4px' }}>Notes</h1>
-              <p style={{ fontSize: '13px', color: '#444' }}>Private, only visible to you</p>
+              <p style={{ fontSize: '13px', color: '#888' }}>{notes.length} note{notes.length === 1 ? '' : 's'}</p>
             </div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
               <input
@@ -168,40 +170,69 @@ export default function Notes() {
             </div>
           </div>
 
+          <div style={{ display: 'flex', gap: '7px', marginBottom: '22px', flexWrap: 'wrap' }}>
+            <span
+              onClick={() => setBoardFilter('all')}
+              style={{ fontSize: '12px', padding: '6px 13px', borderRadius: '99px', cursor: 'pointer', border: '0.5px solid', borderColor: boardFilter === 'all' ? 'rgba(255,255,255,0.15)' : '#2e2e38', background: boardFilter === 'all' ? 'rgba(255,255,255,0.09)' : 'transparent', color: boardFilter === 'all' ? '#f5f5fa' : '#888' }}
+            >All</span>
+            {boards.map((b, i) => (
+              <span
+                key={b.id}
+                onClick={() => setBoardFilter(b.id)}
+                style={{ fontSize: '12px', padding: '6px 13px', borderRadius: '99px', cursor: 'pointer', border: '0.5px solid', borderColor: boardFilter === b.id ? 'rgba(255,255,255,0.15)' : '#2e2e38', background: boardFilter === b.id ? 'rgba(255,255,255,0.09)' : 'transparent', color: boardFilter === b.id ? '#f5f5fa' : '#888', display: 'flex', alignItems: 'center', gap: '6px' }}
+              >
+                <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: COLORS[i % 6], flexShrink: 0 }} />
+                {b.name}
+              </span>
+            ))}
+            <span
+              onClick={() => setBoardFilter('none')}
+              style={{ fontSize: '12px', padding: '6px 13px', borderRadius: '99px', cursor: 'pointer', border: '0.5px solid', borderColor: boardFilter === 'none' ? 'rgba(255,255,255,0.15)' : '#2e2e38', background: boardFilter === 'none' ? 'rgba(255,255,255,0.09)' : 'transparent', color: boardFilter === 'none' ? '#f5f5fa' : '#888', display: 'flex', alignItems: 'center', gap: '6px' }}
+            >
+              <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: '#555', flexShrink: 0 }} />
+              No board
+            </span>
+          </div>
+
           {loading ? (
             <p style={{ color: '#444', fontSize: '14px' }}>Loading...</p>
           ) : filteredNotes.length === 0 ? (
             <p style={{ color: '#444', fontSize: '14px' }}>
-              {notes.length === 0 ? 'No notes yet. Create your first one.' : 'No notes match your search.'}
+              {notes.length === 0 ? 'No notes yet. Create your first one.' : 'No notes match this filter.'}
             </p>
           ) : (
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '8px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(240px, 1fr))', gap: '10px' }}>
               {filteredNotes.map(note => {
-                const bName = boardName(note.board_id)
+                const bStyle = boardStyle(note.board_id)
                 return (
                   <div
                     key={note.id}
                     onClick={() => router.push(`/notes/${note.id}`)}
-                    style={{ padding: '14px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}
+                    style={{ padding: '13px 15px', borderRadius: '10px', border: '0.5px solid rgba(255,255,255,0.07)', background: '#22222c', cursor: 'pointer' }}
                   >
+                    {note.board_id && (
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginBottom: '8px' }}>
+                        <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: bStyle.dot, flexShrink: 0 }} />
+                        <span style={{ fontSize: '11px', color: bStyle.text }}>{boardName(note.board_id)}</span>
+                      </div>
+                    )}
                     <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '8px', marginBottom: '6px' }}>
-                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#bbb' }}>{note.title || 'Untitled'}</span>
-                      <span style={{ fontSize: '11px', color: '#444', flexShrink: 0 }}>{formatRelative(note.updated_at)}</span>
+                      <span style={{ fontSize: '14px', fontWeight: '500', color: '#f5f5fa' }}>{note.title || 'Untitled'}</span>
+                      <span style={{ fontSize: '10.5px', color: '#888', flexShrink: 0, marginLeft: '8px' }}>{formatRelative(note.updated_at)}</span>
                     </div>
-                    <p style={{ fontSize: '12px', color: '#666', lineHeight: 1.5, margin: '0 0 10px', minHeight: '18px' }}>
+                    <p style={{ fontSize: '12px', color: '#c0c0cc', lineHeight: 1.5, margin: '0 0 12px', minHeight: '18px' }}>
                       {stripHtml(note.body) || 'No content yet'}
                     </p>
-                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '8px' }}>
-                      <div style={{ display: 'flex', gap: '5px', flexWrap: 'wrap' }}>
-                        {(note.tags || []).map(tag => {
-                          const s = tagStyle(tag)
-                          return (
-                            <span key={tag} style={{ fontSize: '10px', padding: '2px 8px', borderRadius: '99px', background: s.bg, color: s.color }}>{tag}</span>
-                          )
-                        })}
+                    {(note.tags || []).length > 0 && (
+                      <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
+                        {note.tags.map(tag => (
+                          <span key={tag} style={{ fontSize: '11px', color: '#d0d0d6', display: 'flex', alignItems: 'center', gap: '5px' }}>
+                            <span style={{ width: '5px', height: '5px', borderRadius: '50%', background: tagColor(tag), flexShrink: 0 }} />
+                            {tag}
+                          </span>
+                        ))}
                       </div>
-                      <span style={{ fontSize: '11px', color: '#3a3a44', flexShrink: 0, whiteSpace: 'nowrap' }}>{bName || 'No board'}</span>
-                    </div>
+                    )}
                   </div>
                 )
               })}
