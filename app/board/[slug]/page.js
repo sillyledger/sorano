@@ -22,6 +22,7 @@ export default function BoardPage({ params }) {
   const [user, setUser] = useState(null)
   const [loading, setLoading] = useState(true)
   const [voteCounts, setVoteCounts] = useState({})
+  const [linkCopied, setLinkCopied] = useState(false)
   const [newCard, setNewCard] = useState({ col: null, title: '', tag: '' })
   const [showMenu, setShowMenu] = useState(false)
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
@@ -309,7 +310,7 @@ export default function BoardPage({ params }) {
               </div>
             </div>
             {board?.is_public && (
-              <button onClick={() => navigator.clipboard?.writeText(`https://sorano.space/${board.slug}`)} style={{ padding: '5px 11px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '12px', color: '#888', cursor: 'pointer' }}>Copy link</button>
+              <button onClick={() => { navigator.clipboard?.writeText(`https://sorano.space/${board.slug}`); setLinkCopied(true); setTimeout(() => setLinkCopied(false), 1500) }} style={{ padding: '5px 11px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '12px', color: linkCopied ? '#7F77DD' : '#888', cursor: 'pointer', minWidth: '68px' }}>{linkCopied ? 'Copied!' : 'Copy link'}</button>
             )}
             <div style={{ position: 'relative' }}>
               <button onClick={() => setShowMenu(!showMenu)} style={{ padding: '5px 10px', borderRadius: '6px', border: '0.5px solid rgba(255,255,255,0.08)', background: 'transparent', fontSize: '16px', color: '#888', cursor: 'pointer', lineHeight: 1 }}>···</button>
